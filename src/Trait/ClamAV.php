@@ -36,7 +36,7 @@ namespace Ikechukwukalu\Clamavfileupload\Trait;
  * 1. Go to <https://github.com/kissit/php-clamav-scan> to view the original
  *    PHP file.
  * 2. Go to <https://github.com/ikechukwukalu> to view my personal
- *    GitHub account 😊.
+ *    GitHub account.
 */
 
 trait ClamAV {
