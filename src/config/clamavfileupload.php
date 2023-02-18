@@ -20,11 +20,7 @@ return [
     /**
      * bool - should file upload be processed in a queue. Default true
      */
-    'queue' => env('FILE_UPLOAD_QUEUE', true),
-    /**
-     * bool - should file upload be processed in a queue. Default true
-     */
-    'log_queue_data' => env('FILE_UPLOAD_LOG_QUEUE_DATA', false),
+    'log_scan_data' => env('FILE_UPLOAD_LOG_SCAN_DATA', false),
     /**
      * string - input name. Default 'file'
      */

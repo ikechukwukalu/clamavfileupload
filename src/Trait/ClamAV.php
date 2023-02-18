@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikechukwukalu\Clamavfileupload\Foundation;
+namespace Ikechukwukalu\Clamavfileupload\Trait;
 
 /*
  * ClamAV.php

@@ -3,30 +3,29 @@
 namespace Ikechukwukalu\Clamavfileupload\Listeners;
 
 use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
+use Ikechukwukalu\Clamavfileupload\Facade\QueuedFileUpload;
+use Ikechukwukalu\Clamavfileupload\Support\TemporaryFileUpload;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Illuminate\Support\Facades\Log;
 
 class ClamavFileUpload implements ShouldQueue
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
+    private Request $request;
+    private QueuedFileUpload $fileUpload;
 
     /**
      * Handle the event.
      */
     public function handle(ClamavQueuedFileScan $event): void
     {
-        $event->fileUpload::customFileUploadSettings($event->settings);
+        $this->runFileUploadProcesses($event);
+    }
 
-        $request = new Request;
+    private function setFileRequest(ClamavQueuedFileScan $event): void
+    {
+        $this->request = new Request;
         $files = [];
 
         foreach ($event->tmpFiles as $tmpFile) {
@@ -34,14 +33,17 @@ class ClamavFileUpload implements ShouldQueue
             $files[] = new UploadedFile($tmpFile, ".{$extension}");
         }
 
-        $request->files->set($event->fileUpload::$input, $files);
+        $this->request->files->set($this->fileUpload::$input, $files);
+    }
 
-        $event->fileUpload::fileUploadSettings($request);
-        $event->fileUpload::fileUpload();
-        $event->fileUpload::removeTemporaryFiles($event->tmpFiles);
+    private function runFileUploadProcesses(ClamavQueuedFileScan $event): void
+    {
+        $this->fileUpload = new QueuedFileUpload;
+        $this->fileUpload::customFileUploadSettings($event->settings);
+        $this->setFileRequest($event);
+        $this->fileUpload::fileUploadSettings($this->request);
+        $this->fileUpload::fileUpload();
 
-        if (config('clamavfileupload.log_queue_data')) {
-            Log::info(json_encode($event->fileUpload::$scanData));
-        }
+        TemporaryFileUpload::removeFiles($event->tmpFiles);
     }
 }

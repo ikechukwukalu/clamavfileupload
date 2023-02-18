@@ -9,22 +9,18 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Ikechukwukalu\Clamavfileupload\Facade\FileUpload;
 
 class ClamavQueuedFileScan
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public FileUpload $fileUpload;
     public array $tmpFiles;
     public array $settings;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $fileUpload, array $tmpFiles, array $settings)
+    public function __construct(array $tmpFiles, array $settings)
     {
-        $this->fileUpload = new $fileUpload();
         $this->tmpFiles = $tmpFiles;
         $this->settings = $settings;
     }

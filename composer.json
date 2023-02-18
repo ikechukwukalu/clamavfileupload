@@ -8,6 +8,7 @@
             "Ikechukwukalu\\Clamavfileupload\\": "src/",
             "Ikechukwukalu\\Clamavfileupload\\Models\\": "src/Models/",
             "Ikechukwukalu\\Clamavfileupload\\Foundation\\": "src/Foundation/",
+            "Ikechukwukalu\\Clamavfileupload\\Trait\\": "src/Trait/",
             "Ikechukwukalu\\Clamavfileupload\\Support\\": "src/Support/",
             "Ikechukwukalu\\Clamavfileupload\\Facade\\": "src/Facade/",
             "Ikechukwukalu\\Clamavfileupload\\Events\\": "src/Events/",
