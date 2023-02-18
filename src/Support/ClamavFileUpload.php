@@ -14,7 +14,7 @@ class ClamavFileUpload extends FileUpload
 {
     use ClamAV;
 
-    public static function fileUpload(): null|FileUploadModel|EloquentCollection
+    public static function fileUpload(): bool|null|FileUploadModel|EloquentCollection
     {
         if(self::$request->file()) {
             self::storeFiles();

@@ -4,7 +4,7 @@ namespace Ikechukwukalu\Clamavfileupload\Foundation;
 
 use Ikechukwukalu\Clamavfileupload\Models\FileUploads as FileUploadModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +19,6 @@ class FileUpload
     public static string $ref;
     public static null|string $folder;
     public static string $uploadPath;
-    public static bool $queue;
     public static array $scanData;
 
     public static function logScanData(string $message): void
@@ -29,7 +28,7 @@ class FileUpload
         }
     }
 
-    protected static function provideDisk(): FilesystemAdapter
+    protected static function provideDisk(): Filesystem
     {
         return Storage::build([
             'driver' => self::getDisk(),
@@ -101,7 +100,7 @@ class FileUpload
         [$fileName, $relativeFilePath] = self::fileNameAndPath();
 
         $file = str_replace(self::storageDisk()
-                ->path(self::$uploadPath), '', $file);
+                ->path(self::$uploadPath), '', self::$request->file(self::$input));
         self::storageDisk()->delete(self::$uploadPath . $file);
 
         return null;
@@ -148,7 +147,7 @@ class FileUpload
         return config('clamavfileupload.disk');
     }
 
-    protected static function storageDisk(): FilesystemAdapter
+    protected static function storageDisk(): Filesystem
     {
         return Storage::disk(self::getDisk());
     }

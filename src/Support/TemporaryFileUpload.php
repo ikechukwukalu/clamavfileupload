@@ -5,7 +5,7 @@ namespace Ikechukwukalu\Clamavfileupload\Support;
 use Illuminate\Http\Request;
 use Ikechukwukalu\Clamavfileupload\Models\FileUploads as FileUploadModel;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
 
@@ -26,7 +26,7 @@ class TemporaryFileUpload extends FileUpload
         return true;
     }
 
-    protected static function provideDisk(): FilesystemAdapter
+    protected static function provideDisk(): Filesystem
     {
         return Storage::build([
             'driver' => self::getDisk(),
