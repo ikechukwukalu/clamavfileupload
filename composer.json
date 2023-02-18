@@ -22,10 +22,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "beyondcode/laravel-websockets": "^1.14",
         "laravel/framework": "^9.0|^10.0",
-        "predis/predis": "^2.1",
-        "pusher/pusher-php-server": "7.2"
+        "predis/predis": "^2.1"
     },
     "require-dev": {
         "knuckleswtf/scribe": "dev-master"
