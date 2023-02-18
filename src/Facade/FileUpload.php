@@ -14,7 +14,7 @@ use Ikechukwukalu\Clamavfileupload\Models\FileUploads as FileUploadModel;
 class FileUpload extends ClamavFileUpload
 {
     public static function uploadFiles(Request $request,
-                array $settings = ['folder' => 'ike']): bool|FileUploadModel|EloquentCollection
+                array $settings = []): bool|FileUploadModel|EloquentCollection
     {
         self::customFileUploadSettings($settings);
         self::fileUploadSettings($request);
