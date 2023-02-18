@@ -22,12 +22,11 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "laravel/framework": "^9.0|^10.0",
+        "php": "^8.1",
+        "laravel/framework": "^10.0",
         "predis/predis": "^2.1"
     },
-    "require-dev": {
-        "knuckleswtf/scribe": "dev-master"
-    },
+    "require-dev": {},
     "extra": {
         "laravel": {
             "providers": [
