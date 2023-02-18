@@ -1,0 +1,39 @@
+{
+    "name": "ikechukwukalu/clamavfileupload",
+    "description": "File upload with ClamAV anti-virsu scan",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ikechukwukalu\\Clamavfileupload\\": "src/",
+            "Ikechukwukalu\\Clamavfileupload\\Models\\": "src/Models/",
+            "Ikechukwukalu\\Clamavfileupload\\Foundation\\": "src/Foundation/",
+            "Ikechukwukalu\\Clamavfileupload\\Support\\": "src/Support/",
+            "Ikechukwukalu\\Clamavfileupload\\Facade\\": "src/Facade/",
+            "Ikechukwukalu\\Clamavfileupload\\Events\\": "src/Events/",
+            "Ikechukwukalu\\Clamavfileupload\\Listeners\\": "src/Listeners/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ikechukwu Kalu"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "beyondcode/laravel-websockets": "^1.14",
+        "laravel/framework": "^9.0|^10.0",
+        "predis/predis": "^2.1",
+        "pusher/pusher-php-server": "7.2"
+    },
+    "require-dev": {
+        "knuckleswtf/scribe": "dev-master"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ikechukwukalu\\Clamavfileupload\\ClamavfileuploadServiceProvider"
+            ]
+        }
+    }
+}
