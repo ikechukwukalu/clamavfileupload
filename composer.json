@@ -1,6 +1,6 @@
 {
     "name": "ikechukwukalu/clamavfileupload",
-    "description": "File upload with ClamAV anti-virsu scan",
+    "description": "File upload with ClamAV anti-virus scan",
     "type": "library",
     "license": "MIT",
     "autoload": {
