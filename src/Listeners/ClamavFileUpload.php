@@ -41,7 +41,7 @@ class ClamavFileUpload implements ShouldQueue
         $this->fileUpload = new QueuedFileUpload;
         $this->fileUpload::customFileUploadSettings($event->settings);
         $this->setFileRequest($event);
-        $this->fileUpload::fileUploadSettings($this->request);
+        $this->fileUpload::fileUploadSettings($this->request, $event->ref);
         $this->fileUpload::fileUpload();
 
         TemporaryFileUpload::removeFiles($event->tmpFiles);

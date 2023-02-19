@@ -15,14 +15,16 @@ class ClamavQueuedFileScan
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public array $tmpFiles;
     public array $settings;
+    public string $ref;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(array $tmpFiles, array $settings)
+    public function __construct(array $tmpFiles, array $settings, string $ref)
     {
         $this->tmpFiles = $tmpFiles;
         $this->settings = $settings;
+        $this->ref = $ref;
     }
 
     /**

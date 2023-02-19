@@ -49,15 +49,11 @@ class ClamavFileUpload extends FileUpload
             $data['errorFile'] = null;
             $data['error'] = null;
 
-            FileScanPass::dispatch($data);
-
             return $data;
         }
 
         $data['errorFile'] = $file;
         $data['error'] = self::getMessage();
-
-        FileScanFail::dispatch($data);
 
         return $data;
     }
@@ -72,6 +68,8 @@ class ClamavFileUpload extends FileUpload
 
             if (!self::$scanData['status']) {
                 self::logScanData(self::$scanData['error']);
+
+                FileScanFail::dispatch(self::$scanData);
                 return self::$scanData['status'];
             }
         }
@@ -85,12 +83,15 @@ class ClamavFileUpload extends FileUpload
 
             if (!self::$scanData['status']) {
                 self::logScanData(self::$scanData['error']);
+
+                FileScanFail::dispatch(self::$scanData);
                 return self::$scanData['status'];
             }
 
             $i ++;
         }
 
+        FileScanPass::dispatch(self::$scanData);
         return true;
     }
 }

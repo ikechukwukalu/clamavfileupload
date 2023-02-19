@@ -36,10 +36,10 @@ abstract class FileUploadLogic extends ClamavFileUpload
         }
     }
 
-    public static function fileUploadSettings(Request $request): void
+    public static function fileUploadSettings(Request $request, string $ref = null): void
     {
         self::$request = $request;
-        self::$ref = self::setRef();
+        self::$ref = $ref ?? self::setRef();
     }
 
     private static function defaultFileUploadSettings(): array

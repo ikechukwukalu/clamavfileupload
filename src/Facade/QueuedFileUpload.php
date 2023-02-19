@@ -22,8 +22,9 @@ class QueuedFileUpload extends FileUploadLogic
     protected static function clamavFileUpload(array $settings = []): bool
     {
         $tmpFiles = TemporaryFileUpload::storeFiles();
-        ClamavQueuedFileScan::dispatch($tmpFiles, $settings);
+        self::$ref = self::setRef();
 
+        ClamavQueuedFileScan::dispatch($tmpFiles, $settings, self::$ref);
         return true;
     }
 
