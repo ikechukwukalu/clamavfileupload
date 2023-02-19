@@ -137,7 +137,8 @@ QueuedFileUpload::$ref
 
 ### NOTE
 
-When a single file scanned fails, the process is ended and every uploaded file is removed.
+- When a single file scanned fails, the process is ended and every uploaded file is removed.
+- Every batch of uploaded files has a `$ref` UUID assigned to them.
 
 ## PUBLISH LANG
 
