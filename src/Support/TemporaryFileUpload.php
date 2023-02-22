@@ -3,7 +3,7 @@
 namespace Ikechukwukalu\Clamavfileupload\Support;
 
 use Illuminate\Http\Request;
-use Ikechukwukalu\Clamavfileupload\Models\FileUploads as FileUploadModel;
+use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;

@@ -3,7 +3,7 @@
 namespace Ikechukwukalu\Clamavfileupload\Facade;
 
 use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
-use Ikechukwukalu\Clamavfileupload\Models\FileUploads as FileUploadModel;
+use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Ikechukwukalu\Clamavfileupload\Support\ClamavFileUpload as ClamavFileUploadSupport;
 use Ikechukwukalu\Clamavfileupload\Support\TemporaryFileUpload;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;

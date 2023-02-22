@@ -4,8 +4,13 @@ namespace Ikechukwukalu\Clamavfileupload;
 
 use Illuminate\Support\ServiceProvider;
 
-class ClamavfileuploadServiceProvider extends ServiceProvider
+class ClamavFileUploadServiceProvider extends ServiceProvider
 {
+
+    public const CONFIG = __DIR__.'/config/clamavfileupload.php';
+    public const LANG = __DIR__.'/lang';
+    public const DB = __DIR__.'/migrations';
+
     /**
      * Bootstrap the application services.
      *
@@ -13,17 +18,17 @@ class ClamavfileuploadServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__.'/migrations');
-        $this->loadTranslationsFrom(__DIR__.'/lang', 'clamavfileupload');
+        $this->loadMigrationsFrom(self::DB);
+        $this->loadTranslationsFrom(self::LANG, 'clamavfileupload');
 
         $this->publishes([
-            __DIR__.'/config/clamavfileupload.php' => config_path('clamavfileupload.php'),
+            self::CONFIG => config_path('clamavfileupload.php'),
         ], 'cfu-config');
         $this->publishes([
-            __DIR__.'/migrations' => database_path('migrations'),
+            self::DB => database_path('migrations'),
         ], 'cfu-migrations');
         $this->publishes([
-            __DIR__.'/lang' => lang_path('vendor/clamavfileupload'),
+            self::LANG => lang_path('vendor/clamavfileupload'),
         ], 'cfu-lang');
     }
 
@@ -35,7 +40,7 @@ class ClamavfileuploadServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/config/clamavfileupload.php', 'clamavfileupload'
+            self::CONFIG, 'clamavfileupload'
         );
 
         $this->app->register(EventServiceProvider::class);

@@ -3,7 +3,7 @@
 namespace Ikechukwukalu\Clamavfileupload\Support;
 
 use Illuminate\Http\Request;
-use Ikechukwukalu\Clamavfileupload\Models\FileUploads as FileUploadModel;
+use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanPass;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanFail;
@@ -35,7 +35,9 @@ class ClamavFileUpload extends FileUpload
 
     public static function scanFile($filePath, $file): array
     {
-        $data = [];
+        $data = [
+            'ref' => self::$ref
+        ];
 
         if (self::ping()) {
             $data['status'] = self::scan($filePath);

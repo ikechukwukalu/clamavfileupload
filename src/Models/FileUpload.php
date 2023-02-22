@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FileUploads extends Model
+class FileUpload extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -22,9 +22,5 @@ class FileUploads extends Model
         'mime_type',
         'path',
         'url',
-    ];
-
-    protected $hidden = [
-        'ref'
     ];
 }

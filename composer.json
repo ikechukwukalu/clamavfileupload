@@ -15,6 +15,15 @@
             "Ikechukwukalu\\Clamavfileupload\\Listeners\\": "src/Listeners/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
     "authors": [
         {
             "name": "Ikechukwu Kalu"
@@ -26,11 +35,15 @@
         "laravel/framework": "^10.0",
         "predis/predis": "^2.1"
     },
-    "require-dev": {},
+    "require-dev": {
+        "mockery/mockery": "^1.4.4",
+        "phpunit/phpunit": "^10.0",
+        "orchestra/testbench": "^8.0"
+    },
     "extra": {
         "laravel": {
             "providers": [
-                "Ikechukwukalu\\Clamavfileupload\\ClamavfileuploadServiceProvider"
+                "Ikechukwukalu\\Clamavfileupload\\ClamavFileUploadServiceProvider"
             ]
         }
     }

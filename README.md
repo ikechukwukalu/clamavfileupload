@@ -132,13 +132,28 @@ QueuedFileUpload::$ref
 /**
  * Dispatches when a file scanned has a problem.
  */
-\Ikechukwukalu\Clamavfileupload\Events\FileScanPass::class
+\Ikechukwukalu\Clamavfileupload\Events\FileScanFail::class
 ```
 
 ### NOTE
 
 - When a single file scanned fails, the process is ended and every uploaded file is removed.
 - Every batch of uploaded files has a `$ref` UUID assigned to them.
+- Model file `Ikechukwukalu\Clamavfileupload\Models\FileUpload`
+
+```php
+protected $fillable = [
+    'ref',
+    'name',
+    'file_name',
+    'size',
+    'extension',
+    'disk',
+    'mime_type',
+    'path',
+    'url',
+];
+```
 
 ## PUBLISH LANG
 
