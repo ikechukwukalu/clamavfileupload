@@ -39,15 +39,49 @@ jobs:
         run: "composer exec -- parallel-lint src/"
   unit_tests:
     name: "Unit Tests"
-    runs-on: ubuntu-latest
+    needs:
+      - "byte_level"
+      - "syntax_errors"
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.0"
+          - "8.1"
+          - "8.2"
+        laravel-constrain:
+          - "9.*"
+          - "10.*"
+        dependencies:
+          - "lowest"
+          - "highest"
+        exclude:
+          - laravel-constrain: "10.*"
+            php-version: "8.0"
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@master
+      - name: "Set up PHP"
+        uses: "shivammathur/setup-php@v2"
         with:
-          php-version: 8.1
-          extension-csv: mbstring, bcmath
-      - name: Install Composer Dependencies
-        run: composer install
-      - name: Execute tests (Unit and Feature tests) using PHPUnit
-        run: composer run-script test
+          php-version: "${{ matrix.php-version }}"
+          extensions: mbstring, intl
+          coverage: xdebug
+      - name: "Checkout code"
+        uses: "actions/checkout@v3"
+      - name: Set Minimum PHP 8.1 Version for ramsey/collection
+        run: composer require ramsey/collection:^1.2 --no-interaction --no-update
+        if: matrix.php-version >= 8.1
+      - name: Set Minimum PHP 8.2 Version for nesbot/carbon
+        run: composer require nesbot/carbon:^2.62.1 --no-interaction --no-update
+        if: matrix.php-version >= 8.2
+      - name: Set Minimum PHP 8.2 Version for orchestra/testbench
+        run: composer require --dev orchestra/testbench:^7.10 --no-interaction --no-update
+        if: matrix.php-version >= 8.2
+      - name: "Install dependencies"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+      - name: "Execute unit tests"
+        run: "composer run-script test"
+      - name: "Upload coverage to Codecov"
+        uses: "codecov/codecov-action@v2"
