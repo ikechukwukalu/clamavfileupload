@@ -41,7 +41,12 @@ jobs:
     name: "Unit Tests"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: 8.1
+          extension-csv: mbstring, bcmath
       - name: Install Composer Dependencies
         run: composer install
       - name: Execute tests (Unit and Feature tests) using PHPUnit
