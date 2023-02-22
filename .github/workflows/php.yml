@@ -43,6 +43,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Install Composer Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist  --ignore-platform-reqs
+        run: composer install
       - name: Execute tests (Unit and Feature tests) using PHPUnit
         run: composer run-script test
