@@ -47,6 +47,8 @@ jobs:
           sudo mkdir -p /var/run/clamav
           sudo touch /var/run/clamav/clamd.sock
           sudo chown clamav:clamav /var/run/clamav/clamd.sock
+          sudo touch /var/run/clamav/clamd.ctl
+          sudo chown clamav:clamav /var/run/clamav/clamd.ctl
           sudo systemctl stop clamav-freshclam
           sudo freshclam
           sudo systemctl restart clamav-freshclam
