@@ -3,14 +3,10 @@
 namespace Tests;
 
 use Ikechukwukalu\Clamavfileupload\ClamavFileUploadServiceProvider;
+use Orchestra\Testbench\TestCase as BaseTestCase;
 
-abstract class TestCase extends \Orchestra\Testbench\TestCase
+abstract class TestCase extends BaseTestCase
 {
-    public function setUp(): void
-    {
-      parent::setUp();
-    }
-
     protected function defineDatabaseMigrations()
     {
         $this->loadLaravelMigrations();

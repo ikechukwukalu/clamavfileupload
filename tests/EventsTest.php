@@ -16,11 +16,6 @@ class EventsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp(): void
-    {
-      parent::setUp();
-    }
-
     public function test_fires_clamav_file_scan_event(): void
     {
         $event = Event::fake();
