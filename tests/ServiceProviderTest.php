@@ -7,6 +7,11 @@ use Ikechukwukalu\Clamavfileupload\ClamavFileUploadServiceProvider;
 
 class ServiceProviderTest extends TestCase
 {
+    public function setUp(): void
+    {
+      parent::setUp();
+    }
+
     public function test_merges_config(): void
     {
         static::assertSame(

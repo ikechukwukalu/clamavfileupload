@@ -17,6 +17,11 @@ class FileUploadTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp(): void
+    {
+      parent::setUp();
+    }
+
     public function test_file_upload_run_is_true(): void
     {
         Storage::fake(config('clamavfileupload.disk'));
