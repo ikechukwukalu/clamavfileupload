@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Ikechukwukalu\Clamavfileupload\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -10,7 +10,6 @@ use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanFail;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanPass;
 use Ikechukwukalu\Clamavfileupload\Listeners\ClamavFileUpload;
-use Tests\TestCase;
 
 class EventsTest extends TestCase
 {

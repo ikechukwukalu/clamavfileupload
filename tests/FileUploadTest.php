@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Ikechukwukalu\Clamavfileupload\Tests;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
