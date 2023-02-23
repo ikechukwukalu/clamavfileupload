@@ -19,66 +19,70 @@ class FileUploadTest extends TestCase
 
     public function test_file_upload_run_is_true(): void
     {
-        Storage::fake(config('clamavfileupload.disk'));
+        if (FileUpload::ping()) {
+            Storage::fake(config('clamavfileupload.disk'));
 
-        $file = __DIR__ . '/file/lorem-ipsum.pdf';
-        if (! is_dir($tmpDir = __DIR__ . '/tmp')) {
-            mkdir($tmpDir, 0755, true);
+            $file = __DIR__ . '/file/lorem-ipsum.pdf';
+            if (! is_dir($tmpDir = __DIR__ . '/tmp')) {
+                mkdir($tmpDir, 0755, true);
+            }
+
+            $tmpFile = $tmpDir . '/lorem-ipsum.pdf';
+            $this->assertTrue(copy($file, $tmpFile));
+
+            $request = new Request;
+            $files = [];
+            $extension = explode('.', $tmpFile)[1];
+            $files[] = new UploadedFile($tmpFile, ".{$extension}");
+            $input = config('clamavfileupload.input', 'file');
+            $request->files->set($input, $files);
+
+            $this->assertTrue($request instanceof Request);
+
+            $settings = [
+                'folder' => 'docs',
+                'name' => 'Resumes'
+            ];
+
+            $this->assertTrue(FileUpload::uploadFiles($request, $settings) instanceof Collection);
         }
-
-        $tmpFile = $tmpDir . '/lorem-ipsum.pdf';
-        $this->assertTrue(copy($file, $tmpFile));
-
-        $request = new Request;
-        $files = [];
-        $extension = explode('.', $tmpFile)[1];
-        $files[] = new UploadedFile($tmpFile, ".{$extension}");
-        $input = config('clamavfileupload.input', 'file');
-        $request->files->set($input, $files);
-
-        $this->assertTrue($request instanceof Request);
-
-        $settings = [
-            'folder' => 'docs',
-            'name' => 'Resumes'
-        ];
-
-        $this->assertTrue(FileUpload::uploadFiles($request, $settings) instanceof Collection);
     }
 
     public function test_queue_file_upload_run_is_true(): void
     {
-        Storage::fake(config('clamavfileupload.disk'));
+        if (FileUpload::ping()) {
+            Storage::fake(config('clamavfileupload.disk'));
 
-        $file = __DIR__ . '/file/lorem-ipsum.pdf';
-        if (! is_dir($tmpDir = __DIR__ . '/tmp')) {
-            mkdir($tmpDir, 0755, true);
+            $file = __DIR__ . '/file/lorem-ipsum.pdf';
+            if (! is_dir($tmpDir = __DIR__ . '/tmp')) {
+                mkdir($tmpDir, 0755, true);
+            }
+
+            $tmpFile = $tmpDir . '/lorem-ipsum.pdf';
+            $this->assertTrue(copy($file, $tmpFile));
+
+            $request = new Request;
+            $files = [];
+            $extension = explode('.', $tmpFile)[1];
+            $files[] = new UploadedFile($tmpFile, ".{$extension}");
+            $input = config('clamavfileupload.input', 'file');
+            $request->files->set($input, $files);
+
+            $this->assertTrue($request instanceof Request);
+
+            $settings = [
+                'folder' => 'docs',
+                'name' => 'Resumes'
+            ];
+
+            $event = Event::fake();
+
+            $this->assertTrue(QueuedFileUpload::uploadFiles($request, $settings));
+
+            $event->assertListening(
+                ClamavQueuedFileScan::class,
+                ClamavFileUpload::class
+            );
         }
-
-        $tmpFile = $tmpDir . '/lorem-ipsum.pdf';
-        $this->assertTrue(copy($file, $tmpFile));
-
-        $request = new Request;
-        $files = [];
-        $extension = explode('.', $tmpFile)[1];
-        $files[] = new UploadedFile($tmpFile, ".{$extension}");
-        $input = config('clamavfileupload.input', 'file');
-        $request->files->set($input, $files);
-
-        $this->assertTrue($request instanceof Request);
-
-        $settings = [
-            'folder' => 'docs',
-            'name' => 'Resumes'
-        ];
-
-        $event = Event::fake();
-
-        $this->assertTrue(QueuedFileUpload::uploadFiles($request, $settings));
-
-        $event->assertListening(
-            ClamavQueuedFileScan::class,
-            ClamavFileUpload::class
-        );
     }
 }
