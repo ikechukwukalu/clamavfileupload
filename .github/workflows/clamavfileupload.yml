@@ -45,11 +45,11 @@ jobs:
           sudo apt-get install clamav clamav-daemon -y
           sudo systemctl stop clamav-freshclam
           sudo freshclam
-          sudo systemctl start clamav-freshclam
-          sudo systemctl enable clamav-freshclam
           sudo mkdir -p /var/run/clamav
           cd /var/run/clamav
           sudo clamd
+          sudo systemctl start clamav-freshclam
+          sudo systemctl enable clamav-freshclam
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
