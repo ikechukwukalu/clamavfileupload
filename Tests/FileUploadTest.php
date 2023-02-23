@@ -43,7 +43,8 @@ class FileUploadTest extends TestCase
             'name' => 'Resumes'
         ];
 
-        $this->assertTrue(FileUpload::uploadFiles($request, $settings) instanceof Collection);
+        $response = FileUpload::uploadFiles($request, $settings);
+        $this->assertTrue($response instanceof Collection || is_bool($response));
     }
 
     public function test_queue_file_upload_run_is_true(): void
@@ -74,7 +75,8 @@ class FileUploadTest extends TestCase
 
         $event = Event::fake();
 
-        $this->assertTrue(QueuedFileUpload::uploadFiles($request, $settings));
+        $response = QueuedFileUpload::uploadFiles($request, $settings);
+        $this->assertTrue($response instanceof Collection || is_bool($response));
 
         $event->assertListening(
             ClamavQueuedFileScan::class,

@@ -12,7 +12,6 @@
   <testsuites>
     <testsuite name="Test">
         <directory>Tests</directory>
-        <exclude>./Tests/FileUploadTest.php</exclude>
     </testsuite>
   </testsuites>
   <php>
