@@ -40,7 +40,13 @@ jobs:
       - "syntax_errors"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "hugoalh/scan-virus-ghaction@v0.6.2"
+      - name: Install Clamav
+        run: |
+          apt-get install clamav clamav-daemon -y
+          systemctl stop clamav-freshclam
+          freshclam
+          systemctl start clamav-freshclam
+          systemctl enable clamav-freshclam
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
