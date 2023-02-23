@@ -41,8 +41,6 @@ namespace Ikechukwukalu\Clamavfileupload\Trait;
 
 trait ClamAV {
 
-    const OK = "OK";
-
     private static $message;
 
     /**
@@ -108,7 +106,7 @@ trait ClamAV {
 
             if($scan !== false) {
                 self::$message = trim($scan);
-                if(self::$message == self::OK) {
+                if(self::$message == 'OK') {
                     return true;
                 }
 
