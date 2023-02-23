@@ -54,7 +54,6 @@ jobs:
           sudo systemctl restart clamav-freshclam
           sudo systemctl restart clamav-daemon
           cd /var/run/clamav
-          sudo clamd
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
