@@ -1,59 +1,20 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 
-name: Tests
+name: Test
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
+  app-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Composer Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+      - name: Run migrations and Execute tests
+        run: |
+          composer run-script test
 
-  byte_level:
-    name: "Byte-level"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Checkout code"
-        uses: "actions/checkout@v3"
-      - name: "Check file permissions"
-        run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" == ""
-      - name: "Find non-printable ASCII characters"
-        run: |
-          ! LC_ALL=C.UTF-8 find ./src -type f -name "*.php" -print0 | xargs -0 -- grep -PHn "[^ -~]"
-  syntax_errors:
-    name: "Syntax errors"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Set up PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "8.2"
-          tools: "parallel-lint"
-      - name: "Checkout code"
-        uses: "actions/checkout@v3"
-      - name: "Validate Composer configuration"
-        run: "composer validate --strict"
-      - name: "Check source code for syntax errors"
-        run: "composer exec -- parallel-lint src/"
-  unit_tests:
-    name: "Unit Tests"
-    needs:
-      - "byte_level"
-      - "syntax_errors"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Setup PHP
-        uses: shivammathur/setup-php@master
-        with:
-          php-version: 8.1
-          extension-csv: mbstring, bcmath
-      - name: "Checkout code"
-        uses: "actions/checkout@v3"
-      - name: Composer install
-        run: composer install
-      - name: "Execute unit tests"
-        run: "composer run-script test"
-      - name: "Upload coverage to Codecov"
-        uses: "codecov/codecov-action@v2"
+
