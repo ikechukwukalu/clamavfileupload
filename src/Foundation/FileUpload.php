@@ -21,6 +21,12 @@ class FileUpload
     public static string $uploadPath;
     public static array $scanData;
 
+    /**
+     * Log scan data.
+     *
+     * @param  string  $message
+     * @return  bool
+     */
     public static function logScanData(string $message): void
     {
         if (config('clamavfileupload.log_scan_data')) {
@@ -28,6 +34,11 @@ class FileUpload
         }
     }
 
+    /**
+     * Provide \Illuminate\Support\Facades\Storage::build.
+     *
+     * @return  \Illuminate\Contracts\Filesystem\Filesystem
+     */
     protected static function provideDisk(): Filesystem
     {
         return Storage::build([
@@ -36,6 +47,12 @@ class FileUpload
         ]);
     }
 
+    /**
+     * Save single or multiple files.
+     *
+     * @return  bool
+     * @return  array
+     */
     protected static function storeFiles(): bool|array
     {
         self::$fileName = self::setFileName();
@@ -47,6 +64,13 @@ class FileUpload
         return self::saveSingleFile();
     }
 
+    /**
+     * Save multiple files.
+     *
+     * @param ?string $fileName
+     * @return  bool
+     * @return  array
+     */
     protected static function saveMultipleFiles(?string $fileName = null): bool|array
     {
         $disk = self::provideDisk();
@@ -61,6 +85,13 @@ class FileUpload
         return true;
     }
 
+    /**
+     * Save single file.
+     *
+     * @param ?string $fileName
+     * @return  bool
+     * @return  array
+     */
     protected static function saveSingleFile(?string $fileName = null): bool|array
     {
         self::provideDisk()->putFileAs("",
@@ -70,6 +101,12 @@ class FileUpload
         return true;
     }
 
+    /**
+     * Remove single or multiple files.
+     *
+     * @param array $files
+     * @return  ?bool
+     */
     protected static function removeFiles(array $files = []): ?bool
     {
         if (is_array(self::$request->file(self::$input))) {
@@ -79,6 +116,11 @@ class FileUpload
         return self::deleteSingleFile();
     }
 
+    /**
+     * Delete multiple files.
+     *
+     * @return  bool
+     */
     protected static function deleteMultipleFiles(): bool
     {
         $i = 1;
@@ -95,6 +137,11 @@ class FileUpload
         return true;
     }
 
+    /**
+     * Delete single file.
+     *
+     * @return  bool
+     */
     protected static function deleteSingleFile(): bool
     {
         [$fileName, $relativeFilePath] = self::fileNameAndPath();
@@ -106,11 +153,23 @@ class FileUpload
         return true;
     }
 
+    /**
+     * Set UUID ref.
+     *
+     * @return  string
+     */
     protected static function setRef(): string
     {
         return (string) Str::uuid();
     }
 
+    /**
+     * Get UUID ref.
+     *
+     * @param ?any $file
+     * @param ?any $i
+     * @return  string
+     */
     protected static function getName($file = null, $i = null): string
     {
         if ($file && $i) {
@@ -122,11 +181,23 @@ class FileUpload
                 ->getClientOriginalName();
     }
 
+    /**
+     * Set file name.
+     *
+     * @param ?any $file
+     * @return  string
+     */
     protected static function setFileName(): string
     {
         return time() . Str::random(40);
     }
 
+    /**
+     * Get extension.
+     *
+     * @param ?any $file
+     * @return  string
+     */
     protected static function getExtension($file = null): string
     {
         if ($file) {
@@ -137,21 +208,44 @@ class FileUpload
                 ->getClientOriginalExtension();
     }
 
+    /**
+     * Get relative path.
+     *
+     * @param any $fileName
+     * @return  string
+     */
     protected static function getRelativeFilePath($fileName): string
     {
         return self::$uploadPath . "/" . $fileName;
     }
 
+    /**
+     * Get disk.
+     *
+     * @return  string
+     */
     protected static function getDisk(): string
     {
         return config('clamavfileupload.disk');
     }
 
+    /**
+     * Get \Illuminate\Support\Facades\Storage::disk.
+     *
+     * @return  \Illuminate\Contracts\Filesystem\Filesystem
+     */
     protected static function storageDisk(): Filesystem
     {
         return Storage::disk(self::getDisk());
     }
 
+    /**
+     * Get file name and path.
+     *
+     * @param ?any $file
+     * @param ?any $i
+     * @return  array
+     */
     protected static function fileNameAndPath($file = null, $i = null): array
     {
         if ($file && $i) {
@@ -163,6 +257,13 @@ class FileUpload
         return [$fileName, self::getRelativeFilePath($fileName)];
     }
 
+    /**
+     * Get file model data.
+     *
+     * @param ?any $file
+     * @param ?any $i
+     * @return  array
+     */
     protected static function getFileModelData($file = null, $i = null): array
     {
         [$fileName, $relativeFilePath] = self::fileNameAndPath($file, $i);
@@ -179,6 +280,11 @@ class FileUpload
         ];
     }
 
+    /**
+     * Insert multiple files.
+     *
+     * @return  \Illuminate\Database\Eloquent\Collection
+     */
     protected static function insertMultipleFiles(): ?EloquentCollection
     {
         $data = [];
@@ -196,6 +302,11 @@ class FileUpload
         return null;
     }
 
+    /**
+     * Insert single file.
+     *
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     */
     protected static function insertSingleFile(): ?FileUploadModel
     {
         return FileUploadModel::create(self::getFileModelData());

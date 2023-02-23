@@ -19,6 +19,10 @@ class ClamavQueuedFileScan
 
     /**
      * Create a new event instance.
+     *
+     * @param  array  $tmpFiles
+     * @param  array  $settings
+     * @param  string  $ref
      */
     public function __construct(array $tmpFiles, array $settings, string $ref)
     {

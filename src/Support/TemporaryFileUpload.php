@@ -11,11 +11,22 @@ use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
 
 class TemporaryFileUpload extends FileUpload
 {
+    /**
+     * Run files scan and upload.
+     *
+     * @return  bool
+     */
     public static function fileUpload(): bool
     {
         return false;
     }
 
+    /**
+     * Remove single or multiple files.
+     *
+     * @param array $files
+     * @return  ?bool
+     */
     public static function removeFiles(array $files = []):  ?bool
     {
         foreach ($files as $file) {
@@ -26,6 +37,11 @@ class TemporaryFileUpload extends FileUpload
         return true;
     }
 
+    /**
+     * Provide \Illuminate\Support\Facades\Storage::build.
+     *
+     * @return  \Illuminate\Contracts\Filesystem\Filesystem
+     */
     protected static function provideDisk(): Filesystem
     {
         return Storage::build([
@@ -34,6 +50,12 @@ class TemporaryFileUpload extends FileUpload
         ]);
     }
 
+    /**
+     * Save single or multiple files.
+     *
+     * @return  bool
+     * @return  array
+     */
     protected static function storeFiles(): bool|array
     {
         self::$fileName = self::setFileName();
@@ -45,6 +67,13 @@ class TemporaryFileUpload extends FileUpload
         return self::saveSingleFile(self::$fileName);
     }
 
+    /**
+     * Save multiple files.
+     *
+     * @param ?string $fileName
+     * @return  bool
+     * @return  array
+     */
     protected static function saveMultipleFiles(?string $fileName = null): bool|array
     {
         $disk = self::provideDisk();
@@ -62,6 +91,13 @@ class TemporaryFileUpload extends FileUpload
         return $tmpFiles;
     }
 
+    /**
+     * Save single file.
+     *
+     * @param ?string $fileName
+     * @return  bool
+     * @return  array
+     */
     protected static function saveSingleFile(?string $fileName = null): bool|array
     {
         $tmp = $fileName . self::getExtension();

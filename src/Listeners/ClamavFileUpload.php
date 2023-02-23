@@ -17,12 +17,21 @@ class ClamavFileUpload implements ShouldQueue
 
     /**
      * Handle the event.
+     *
+     * @param Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan $event
+     * @return  void
      */
     public function handle(ClamavQueuedFileScan $event): void
     {
         $this->runFileUploadProcesses($event);
     }
 
+    /**
+     * Set file request.
+     *
+     * @param Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan $event
+     * @return  void
+     */
     private function setFileRequest(ClamavQueuedFileScan $event): void
     {
         $this->request = new Request;
@@ -36,6 +45,12 @@ class ClamavFileUpload implements ShouldQueue
         $this->request->files->set($this->fileUpload::$input, $files);
     }
 
+    /**
+     * Run file upload processes.
+     *
+     * @param Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan $event
+     * @return  void
+     */
     private function runFileUploadProcesses(ClamavQueuedFileScan $event): void
     {
         $this->fileUpload = new QueuedFileUpload;

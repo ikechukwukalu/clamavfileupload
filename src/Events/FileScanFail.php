@@ -6,6 +6,11 @@ use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
 class FileScanFail extends FileScan
 {
 
+    /**
+     * Create a new event instance.
+     *
+     * @param  array  $scanData
+     */
     public function __construct(array $scanData)
     {
         parent::__construct($scanData);

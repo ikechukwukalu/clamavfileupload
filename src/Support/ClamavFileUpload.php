@@ -14,6 +14,13 @@ class ClamavFileUpload extends FileUpload
 {
     use ClamAV;
 
+    /**
+     * Run files scan and upload.
+     *
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     * @return  \Illuminate\Database\Eloquent\Collection
+     * @return  bool
+     */
     public static function fileUpload(): bool|FileUploadModel|EloquentCollection
     {
         if(self::$request->file()) {
@@ -33,10 +40,18 @@ class ClamavFileUpload extends FileUpload
         return null;
     }
 
+    /**
+     * Scan file.
+     *
+     * @param any $filePath
+     * @param any $file
+     * @return  array
+     */
     public static function scanFile($filePath, $file): array
     {
         $data = [
-            'ref' => self::$ref
+            'ref' => self::$ref,
+            'status' => false
         ];
 
         if (self::ping()) {
@@ -60,6 +75,11 @@ class ClamavFileUpload extends FileUpload
         return $data;
     }
 
+    /**
+     * Are files safe.
+     *
+     * @return  bool
+     */
     private static function areFilesSafe(): bool
     {
         if (!is_array(self::$request->file(self::$input))) {

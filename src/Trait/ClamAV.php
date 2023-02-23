@@ -49,29 +49,32 @@ trait ClamAV {
      */
     private static function socket()
     {
-        if(!empty(config('clamavfileupload.clamd_ip')) && !empty(config('clamavfileupload.clamd_ip'))) {
-            // Attempt to use a network based socket
-            $socket = socket_create(AF_INET, SOCK_STREAM, 0);
-            if(socket_connect($socket, config('clamavfileupload.clamd_ip'), config('clamavfileupload.clamd_ip'))) {
-                self::$message = trans('clamavfileupload::clamav.connected');
-
-                return $socket;
-            }
-        } else {
+        if(empty(config('clamavfileupload.clamd_ip')) && empty(config('clamavfileupload.clamd_ip'))) {
             // By default we just use the local socket
             $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
+
             if(socket_connect($socket, config('clamavfileupload.clamd_sock'))) {
                 self::$message = trans('clamavfileupload::clamav.socket_connected');
-
                 return $socket;
             }
         }
 
+        // Attempt to use a network based socket
+        $socket = socket_create(AF_INET, SOCK_STREAM, 0);
+
+        if(socket_connect($socket, config('clamavfileupload.clamd_ip'), config('clamavfileupload.clamd_ip'))) {
+            self::$message = trans('clamavfileupload::clamav.socket_connected');
+            return $socket;
+        }
+
+        self::$message = trans('clamavfileupload::clamav.unable_to_open_socket');
         return false;
     }
 
     /**
      * Get the last scan message.
+     *
+     * @return string
      */
     public static function getMessage(): string
     {
@@ -80,6 +83,8 @@ trait ClamAV {
 
     /**
      * Function to ping Clamd to make sure its functioning.
+     *
+     * @return bool
      */
     public static function ping(): bool
     {
@@ -90,95 +95,107 @@ trait ClamAV {
         }
 
         self::$message = trans('clamavfileupload::clamav.not_running');
-
         return false;
     }
 
     /**
      * Function to scan the passed in file.
      * Returns true if safe, false otherwise.
+     *
+     * @return bool
      */
     public static function scan($file): bool
     {
-        if(file_exists($file)) {
-            $scan = self::send("SCAN $file");
-            $scan = substr(strrchr($scan, ":"), 1);
-
-            if($scan !== false) {
-                self::$message = trim($scan);
-                if(self::$message == 'OK') {
-                    return true;
-                }
-
-            } else {
-                self::$message = trans('clamavfileupload::clamav.file_not_safe', ['name' => $file]);
-            }
-
-        } else {
-            self::$message = trans('clamavfileupload::clamav.file_not_found', ['name' => $file]);
+        if(!file_exists($file)) {
+            self::$message = trans('clamavfileupload::clamav.file_not_found',
+                ['name' => $file]);
+            return false;
         }
 
+        $scan = self::send("SCAN $file");
+        if($scan === false) {
+            self::$message = trans('clamavfileupload::clamav.not_running');
+            return false;
+        }
+
+        $scanMessage = trim(substr(strrchr($scan, ":"), 1));
+        if($scanMessage == 'OK') {
+            self::$message = $scanMessage;
+            return true;
+        }
+
+        self::$message = trans('clamavfileupload::clamav.file_not_safe',
+            ['name' => $file]);
         return false;
     }
 
     /**
      * Function to scan the passed in stream.
      * Returns true if safe, false otherwise.
+     *
+     * @param any $file
+     * @return bool
      */
     public static function scanstream($file): bool
     {
         $socket = self::socket();
         if(!$socket) {
-            self::$message = trans('clamavfileupload::clamav.unable_to_open_socket');
-
+            self::$message = trans('clamavfileupload::clamav.not_running');
             return false;
         }
 
-        if(file_exists($file)) {
-            if ($scan_fh = fopen($file, 'rb')) {
-                $chunksize = filesize($file) < 8192 ? filesize($file) : 8192;
-                $command = "zINSTREAM\0";
-                socket_send($socket, $command, strlen($command), 0);
-
-                while (!feof($scan_fh)) {
-                    $data = fread($scan_fh, $chunksize);
-                    $packet = pack(sprintf("Na%d", strlen($data)), strlen($data), $data);
-                    socket_send($socket, $packet, strlen($packet), 0);
-                }
-
-                $packet = pack("Nx",0);
-                socket_send($socket, $packet, strlen($packet), 0);
-                socket_recv($socket, $scan, config('clamavfileupload.clamd_sock_len'), 0);
-                socket_close($socket);
-                trim($scan);
-                $scan = substr(strrchr($scan, ":"), 1);
-
-                if($scan !== false) {
-                    self::$message = trim($scan);
-                    if(self::$message == 'OK') {
-
-                        return true;
-                    }
-
-                } else {
-                    self::$message = trans('clamavfileupload::clamav.scan_failed');
-                }
-            }
-
-        } else {
+        if(!file_exists($file)) {
             self::$message = trans('clamavfileupload::clamav.file_not_found');
+            return false;
         }
 
+        if ($scan_fh = fopen($file, 'rb')) {
+            $chunksize = filesize($file) < 8192 ? filesize($file) : 8192;
+            $command = "zINSTREAM\0";
+            socket_send($socket, $command, strlen($command), 0);
+
+            while (!feof($scan_fh)) {
+                $data = fread($scan_fh, $chunksize);
+                $packet = pack(sprintf("Na%d", strlen($data)), strlen($data), $data);
+                socket_send($socket, $packet, strlen($packet), 0);
+            }
+
+            $packet = pack("Nx",0);
+            socket_send($socket, $packet, strlen($packet), 0);
+            socket_recv($socket, $scan, config('clamavfileupload.clamd_sock_len'), 0);
+            socket_close($socket);
+
+            if($scan === false) {
+                self::$message = trans('clamavfileupload::clamav.not_running');
+                return false;
+            }
+
+            $scanMessage = trim(substr(strrchr($scan, ":"), 1));
+            if($scanMessage == 'OK') {
+                self::$message = $scanMessage;
+                return true;
+            }
+        }
+
+        self::$message = trans('clamavfileupload::clamav.file_not_safe',
+            ['name' => $file]);
         return false;
     }
 
     /**
      * Function to send a command to the Clamd socket.
      * In case you need to send any other commands directly.
+     *
+     * @return bool
      */
     public static function send($command) {
-        if(!empty($command)) {
+        if(empty($command)) {
+            return false;
+        }
+
+        try {
             $socket = self::socket();
+
             if($socket) {
                 socket_send($socket, $command, strlen($command), 0);
                 socket_recv($socket, $return, config('clamavfileupload.clamd_sock_len'), 0);
@@ -186,6 +203,8 @@ trait ClamAV {
 
                 return trim($return);
             }
+        } catch (\ErrorException $e) {
+            self::$message = $e->getMessage();
         }
 
         return false;

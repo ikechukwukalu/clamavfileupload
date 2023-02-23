@@ -9,6 +9,15 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class FileUpload extends FileUploadLogic
 {
+    /**
+     * Upload single or multiple files.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  array  $settings
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     * @return  \Illuminate\Database\Eloquent\Collection
+     * @return  bool
+     */
     public static function uploadFiles(Request $request,
                 array $settings = []): bool|FileUploadModel|EloquentCollection
     {
@@ -17,6 +26,13 @@ class FileUpload extends FileUploadLogic
         return self::clamavFileUpload();
     }
 
+    /**
+     * Run files scan and upload.
+     *
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     * @return  \Illuminate\Database\Eloquent\Collection
+     * @return  bool
+     */
     protected static function clamavFileUpload(): bool|FileUploadModel|EloquentCollection
     {
         ClamavFileScan::dispatch();

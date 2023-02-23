@@ -18,6 +18,8 @@ class FileScan
 
     /**
      * Create a new event instance.
+     *
+     * @param  array  $scanData
      */
     public function __construct(array $scanData)
     {

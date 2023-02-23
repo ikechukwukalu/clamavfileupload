@@ -9,10 +9,33 @@ use Illuminate\Http\Request;
 
 abstract class FileUploadLogic extends ClamavFileUpload
 {
+    /**
+     * Upload single or multiple files.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  array  $settings
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     * @return  \Illuminate\Database\Eloquent\Collection
+     * @return  bool
+     */
     abstract public static function uploadFiles(Request $request,
                 array $settings = []): bool|FileUploadModel|EloquentCollection;
+
+    /**
+     * Run files scan and upload.
+     *
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     * @return  \Illuminate\Database\Eloquent\Collection
+     * @return  bool
+     */
     abstract protected static function clamavFileUpload(): bool|FileUploadModel|EloquentCollection;
 
+    /**
+     * Customise file upload settings.
+     *
+     * @param  array  $settings
+     * @return  void
+     */
     public static function customFileUploadSettings(array $settings = []): void
     {
         $whiteList = ['name', 'input', 'folder', 'uploadPath'];
@@ -36,12 +59,24 @@ abstract class FileUploadLogic extends ClamavFileUpload
         }
     }
 
+    /**
+     * Set fixed file upload settings.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  ?string  $ref
+     * @return  void
+     */
     public static function fileUploadSettings(Request $request, string $ref = null): void
     {
         self::$request = $request;
         self::$ref = $ref ?? self::setRef();
     }
 
+    /**
+     * Default file upload settings.
+     *
+     * @return  array
+     */
     private static function defaultFileUploadSettings(): array
     {
         return [
