@@ -150,31 +150,39 @@ trait ClamAV {
         }
 
         if ($scan_fh = fopen($file, 'rb')) {
-            $chunksize = filesize($file) < 8192 ? filesize($file) : 8192;
-            $command = "zINSTREAM\0";
-            socket_send($socket, $command, strlen($command), 0);
+            return self::scanStreamSend($scan_fh, $socket, $file);
+        }
 
-            while (!feof($scan_fh)) {
-                $data = fread($scan_fh, $chunksize);
-                $packet = pack(sprintf("Na%d", strlen($data)), strlen($data), $data);
-                socket_send($socket, $packet, strlen($packet), 0);
-            }
+        self::$message = trans('clamavfileupload::clamav.file_not_safe',
+            ['name' => $file]);
+        return false;
+    }
 
-            $packet = pack("Nx",0);
+    private static function scanStreamSend($scan_fh, $socket, $file) {
+        $chunksize = filesize($file) < 8192 ? filesize($file) : 8192;
+        $command = "zINSTREAM\0";
+        socket_send($socket, $command, strlen($command), 0);
+
+        while (!feof($scan_fh)) {
+            $data = fread($scan_fh, $chunksize);
+            $packet = pack(sprintf("Na%d", strlen($data)), strlen($data), $data);
             socket_send($socket, $packet, strlen($packet), 0);
-            socket_recv($socket, $scan, config('clamavfileupload.clamd_sock_len'), 0);
-            socket_close($socket);
+        }
 
-            if($scan === false) {
-                self::$message = trans('clamavfileupload::clamav.not_running');
-                return false;
-            }
+        $packet = pack("Nx",0);
+        socket_send($socket, $packet, strlen($packet), 0);
+        socket_recv($socket, $scan, config('clamavfileupload.clamd_sock_len'), 0);
+        socket_close($socket);
 
-            $scanMessage = trim(substr(strrchr($scan, ":"), 1));
-            if($scanMessage == 'OK') {
-                self::$message = $scanMessage;
-                return true;
-            }
+        if($scan === false) {
+            self::$message = trans('clamavfileupload::clamav.not_running');
+            return false;
+        }
+
+        $scanMessage = trim(substr(strrchr($scan, ":"), 1));
+        if($scanMessage == 'OK') {
+            self::$message = $scanMessage;
+            return true;
         }
 
         self::$message = trans('clamavfileupload::clamav.file_not_safe',
