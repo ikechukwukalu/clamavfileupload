@@ -42,6 +42,7 @@ jobs:
     steps:
       - name: Install Clamav
         run: |
+          sudo apt update -y
           sudo apt-get install clamav clamav-daemon -y
           sudo mkdir -p /var/run/clamav
           sudo touch /var/run/clamav/clamd.sock
