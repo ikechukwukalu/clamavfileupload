@@ -40,25 +40,15 @@ jobs:
       - "syntax_errors"
     runs-on: "ubuntu-latest"
     steps:
-      - name: Install Clamav
-        run: |
-          sudo apt update -y
-          sudo apt-get install clamav clamav-daemon -y
-          sudo systemctl stop clamav-freshclam
-          sudo freshclam
-          sudo systemctl restart clamav-freshclam
-          sudo systemctl restart clamav-daemon
-          sudo mkdir -p /var/run/clamav
-          sudo touch /var/run/clamav/clamd.sock
-          sudo chown clamav:clamav /var/run/clamav/clamd.sock
-          sudo chmod 755 /var/run/clamav/clamd.sock
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
           php-version: 8.1
           extension-csv: mbstring, bcmath
       - name: "Checkout code"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
+      - name: Git clamAV
+        uses: djdefi/gitavscan@main
       - name: Composer install
         run: composer install
       - name: "Execute unit tests"
