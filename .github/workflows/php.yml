@@ -50,11 +50,9 @@ jobs:
           php-version: 8.1
           extension-csv: mbstring, bcmath
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
-      - name: "Install dependencies"
-        uses: "ramsey/composer-install@v2"
-        with:
-          dependency-versions: "${{ matrix.dependencies }}"
+        uses: "actions/checkout@v2"
+      - name: Composer install
+        run: composer install
       - name: "Execute unit tests"
         run: "composer run-script test"
       - name: "Upload coverage to Codecov"
