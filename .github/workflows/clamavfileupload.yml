@@ -47,6 +47,9 @@ jobs:
           sudo freshclam
           sudo systemctl start clamav-freshclam
           sudo systemctl enable clamav-freshclam
+          sudo mkdir -p /var/run/clamav
+          cd /var/run/clamav
+          sudo clamd
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
