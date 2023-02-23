@@ -49,8 +49,6 @@ jobs:
           extension-csv: mbstring, bcmath
       - name: "Checkout code"
         uses: "actions/checkout@v2"
-      - name: Set Minimum PHP 8.2 Version for orchestra/testbench
-        run: composer require --dev orchestra/testbench:^8.0
       - name: Composer install
         run: composer install
       - name: "Execute unit tests"
