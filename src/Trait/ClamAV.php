@@ -155,7 +155,7 @@ trait ClamAV {
 
                 if($scan !== false) {
                     self::$message = trim($scan);
-                    if(self::$message == self::OK) {
+                    if(self::$message == 'OK') {
 
                         return true;
                     }

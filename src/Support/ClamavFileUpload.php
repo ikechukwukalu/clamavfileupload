@@ -47,7 +47,7 @@ class ClamavFileUpload extends FileUpload
                             $file->getClientOriginalName(),
                             self::getMessage());
 
-        if (self::getMessage() === self::OK) {
+        if (self::getMessage() == 'OK') {
             $data['errorFile'] = null;
             $data['error'] = null;
 

@@ -12,6 +12,7 @@ was built riding on an existing clamav php library [kissit/php-clamav-scan](http
 
 - PHP 8.1+
 - Laravel 10+
+- Clamav
 
 ## STEPS TO INSTALL
 
