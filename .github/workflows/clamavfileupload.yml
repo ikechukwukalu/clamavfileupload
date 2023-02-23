@@ -40,7 +40,7 @@ jobs:
       - "syntax_errors"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "hugoalh/scan-virus-ghaction@0.6.4"
+      - uses: "hugoalh/scan-virus-ghaction@master"
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
