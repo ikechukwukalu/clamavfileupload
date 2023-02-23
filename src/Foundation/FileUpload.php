@@ -166,8 +166,8 @@ class FileUpload
     /**
      * Get UUID ref.
      *
-     * @param ?any $file
-     * @param ?any $i
+     * @param $file
+     * @param $i
      * @return  string
      */
     protected static function getName($file = null, $i = null): string
@@ -184,7 +184,7 @@ class FileUpload
     /**
      * Set file name.
      *
-     * @param ?any $file
+     * @param $file
      * @return  string
      */
     protected static function setFileName(): string
@@ -195,7 +195,7 @@ class FileUpload
     /**
      * Get extension.
      *
-     * @param ?any $file
+     * @param $file
      * @return  string
      */
     protected static function getExtension($file = null): string
@@ -242,8 +242,8 @@ class FileUpload
     /**
      * Get file name and path.
      *
-     * @param ?any $file
-     * @param ?any $i
+     * @param $file
+     * @param $i
      * @return  array
      */
     protected static function fileNameAndPath($file = null, $i = null): array
@@ -260,8 +260,8 @@ class FileUpload
     /**
      * Get file model data.
      *
-     * @param ?any $file
-     * @param ?any $i
+     * @param $file
+     * @param $i
      * @return  array
      */
     protected static function getFileModelData($file = null, $i = null): array
