@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Storage;
 class FileUpload
 {
     public static Request $request;
-    public static null|string $name;
+    public static ?string $name;
     public static string $fileName;
     public static string $input;
     public static string $ref;
-    public static null|string $folder;
+    public static ?string $folder;
     public static string $uploadPath;
     public static array $scanData;
 
@@ -47,7 +47,7 @@ class FileUpload
         return self::saveSingleFile();
     }
 
-    protected static function saveMultipleFiles(null|string $fileName = null): bool|array
+    protected static function saveMultipleFiles(?string $fileName = null): bool|array
     {
         $disk = self::provideDisk();
 
@@ -61,7 +61,7 @@ class FileUpload
         return true;
     }
 
-    protected static function saveSingleFile(null|string $fileName = null): bool|array
+    protected static function saveSingleFile(?string $fileName = null): bool|array
     {
         self::provideDisk()->putFileAs("",
                 self::$request->file(self::$input),
@@ -70,7 +70,7 @@ class FileUpload
         return true;
     }
 
-    protected static function removeFiles(array $files = []): null|bool
+    protected static function removeFiles(array $files = []): ?bool
     {
         if (is_array(self::$request->file(self::$input))) {
             return self::deleteMultipleFiles();
@@ -79,7 +79,7 @@ class FileUpload
         return self::deleteSingleFile();
     }
 
-    protected static function deleteMultipleFiles(): null
+    protected static function deleteMultipleFiles(): bool
     {
         $i = 1;
         foreach (self::$request->file(self::$input) as $file) {
@@ -92,10 +92,10 @@ class FileUpload
             $i ++;
         }
 
-        return null;
+        return true;
     }
 
-    protected static function deleteSingleFile(): null
+    protected static function deleteSingleFile(): bool
     {
         [$fileName, $relativeFilePath] = self::fileNameAndPath();
 
@@ -103,7 +103,7 @@ class FileUpload
                 ->path(self::$uploadPath), '', self::$request->file(self::$input));
         self::storageDisk()->delete(self::$uploadPath . $file);
 
-        return null;
+        return true;
     }
 
     protected static function setRef(): string
@@ -179,7 +179,7 @@ class FileUpload
         ];
     }
 
-    protected static function insertMultipleFiles(): null|EloquentCollection
+    protected static function insertMultipleFiles(): ?EloquentCollection
     {
         $data = [];
         $i = 1;
@@ -196,7 +196,7 @@ class FileUpload
         return null;
     }
 
-    protected static function insertSingleFile(): null|FileUploadModel
+    protected static function insertSingleFile(): ?FileUploadModel
     {
         return FileUploadModel::create(self::getFileModelData());
     }

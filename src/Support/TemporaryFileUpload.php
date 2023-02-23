@@ -11,12 +11,12 @@ use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
 
 class TemporaryFileUpload extends FileUpload
 {
-    public static function fileUpload(): null
+    public static function fileUpload(): bool
     {
-        return null;
+        return false;
     }
 
-    public static function removeFiles(array $files = []):  null|bool
+    public static function removeFiles(array $files = []):  ?bool
     {
         foreach ($files as $file) {
             $file = str_replace(self::storageDisk()->path('tmp'), '', $file);
@@ -45,7 +45,7 @@ class TemporaryFileUpload extends FileUpload
         return self::saveSingleFile(self::$fileName);
     }
 
-    protected static function saveMultipleFiles(null|string $fileName = null): bool|array
+    protected static function saveMultipleFiles(?string $fileName = null): bool|array
     {
         $disk = self::provideDisk();
         $tmpFiles = [];
@@ -62,7 +62,7 @@ class TemporaryFileUpload extends FileUpload
         return $tmpFiles;
     }
 
-    protected static function saveSingleFile(null|string $fileName = null): bool|array
+    protected static function saveSingleFile(?string $fileName = null): bool|array
     {
         $tmp = $fileName . self::getExtension();
 
