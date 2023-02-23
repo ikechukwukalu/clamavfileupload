@@ -127,7 +127,7 @@ QueuedFileUpload::$ref
 \Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan::class
 
 /**
- * Dispatches when any all files scanned are safe.
+ * Dispatches when all files scanned are safe.
  */
 \Ikechukwukalu\Clamavfileupload\Events\FileScanPass::class
 
