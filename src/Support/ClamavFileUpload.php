@@ -83,19 +83,41 @@ class ClamavFileUpload extends FileUpload
     private static function areFilesSafe(): bool
     {
         if (!is_array(self::$request->file(self::$input))) {
-            [$fileName, $relativeFilePath] = self::fileNameAndPath();
-
-            self::$scanData = self::scanFile(self::storageDisk()->path($relativeFilePath),
-                                    self::$request->file(self::$input));
-
-            if (!self::$scanData['status']) {
-                self::logScanData(self::$scanData['error']);
-
-                FileScanFail::dispatch(self::$scanData);
-                return self::$scanData['status'];
-            }
+            return self::isSingleFileSafe();
         }
 
+        return self::areMultipleFilesSafe();
+    }
+
+    /**
+     * Is single file safe.
+     *
+     * @return  bool
+     */
+    private static function isSingleFileSafe(): bool
+    {
+        [$fileName, $relativeFilePath] = self::fileNameAndPath();
+
+        self::$scanData = self::scanFile(self::storageDisk()->path($relativeFilePath),
+                                self::$request->file(self::$input));
+
+        if (self::$scanData['status']) {
+            return true;
+        }
+
+        self::logScanData(self::$scanData['error']);
+        FileScanFail::dispatch(self::$scanData);
+
+        return self::$scanData['status'];
+    }
+
+    /**
+     * Are multiple files safe.
+     *
+     * @return  bool
+     */
+    private static function areMultipleFilesSafe(): bool
+    {
         $i = 1;
         foreach (self::$request->file(self::$input) as $file) {
             [$fileName, $relativeFilePath] = self::fileNameAndPath($file, $i);
@@ -105,8 +127,8 @@ class ClamavFileUpload extends FileUpload
 
             if (!self::$scanData['status']) {
                 self::logScanData(self::$scanData['error']);
-
                 FileScanFail::dispatch(self::$scanData);
+
                 return self::$scanData['status'];
             }
 

@@ -136,7 +136,7 @@ trait ClamAV {
      * @param any $file
      * @return bool
      */
-    public static function scanstream($file): bool
+    public static function scanStream($file): bool
     {
         $socket = self::socket();
         if(!$socket) {
@@ -158,7 +158,18 @@ trait ClamAV {
         return false;
     }
 
-    private static function scanStreamSend($scan_fh, $socket, $file) {
+
+    /**
+     * Function to scan the passed in stream.
+     * Returns true if safe, false otherwise.
+     *
+     * @param any $scan_fh
+     * @param any $socket
+     * @param any $file
+     * @return bool
+     */
+    private static function scanStreamSend($scan_fh, $socket, $file): bool
+    {
         $chunksize = filesize($file) < 8192 ? filesize($file) : 8192;
         $command = "zINSTREAM\0";
         socket_send($socket, $command, strlen($command), 0);
@@ -196,7 +207,8 @@ trait ClamAV {
      *
      * @return bool
      */
-    public static function send($command) {
+    public static function send($command)
+    {
         if(empty($command)) {
             return false;
         }
