@@ -44,16 +44,16 @@ jobs:
         run: |
           sudo apt update -y
           sudo apt-get install clamav clamav-daemon -y
-          sudo mkdir -p /var/run/clamav
-          sudo touch /var/run/clamav/clamd.sock
-          sudo chown clamav:clamav /var/run/clamav/clamd.sock
-          sudo touch /var/run/clamav/clamd.ctl
-          sudo chown clamav:clamav /var/run/clamav/clamd.ctl
           sudo systemctl stop clamav-freshclam
           sudo freshclam
           sudo systemctl restart clamav-freshclam
           sudo systemctl restart clamav-daemon
+          sudo mkdir -p /var/run/clamav
+          sudo touch /var/run/clamav/clamd.sock
+          sudo chown clamav:clamav /var/run/clamav/clamd.sock
+          sudo chmod 755 /var/run/clamd.scan
           cd /var/run/clamav
+          sudo clamd
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
