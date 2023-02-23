@@ -49,12 +49,6 @@ jobs:
           extension-csv: mbstring, bcmath
       - name: "Checkout code"
         uses: "actions/checkout@v2"
-      - name: Install orchestra/testbench
-        run: composer require --dev orchestra/testbench:^8.0
-      - name: Install phpunit/phpunit
-        run: composer require --dev phpunit/phpunit:^10.0
-      - name: Composer install
-        run: composer install
       - name: "Execute unit tests"
         run: "composer run-script test"
       - name: "Upload coverage to Codecov"
