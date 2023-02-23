@@ -211,7 +211,7 @@ class FileUpload
     /**
      * Get relative path.
      *
-     * @param any $fileName
+     * @param $fileName
      * @return  string
      */
     protected static function getRelativeFilePath($fileName): string

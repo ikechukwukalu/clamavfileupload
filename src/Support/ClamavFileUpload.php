@@ -43,8 +43,8 @@ class ClamavFileUpload extends FileUpload
     /**
      * Scan file.
      *
-     * @param any $filePath
-     * @param any $file
+     * @param $filePath
+     * @param $file
      * @return  array
      */
     public static function scanFile($filePath, $file): array

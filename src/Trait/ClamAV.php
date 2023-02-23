@@ -133,7 +133,7 @@ trait ClamAV {
      * Function to scan the passed in stream.
      * Returns true if safe, false otherwise.
      *
-     * @param any $file
+     * @param $file
      * @return bool
      */
     public static function scanStream($file): bool
@@ -163,9 +163,9 @@ trait ClamAV {
      * Function to scan the passed in stream.
      * Returns true if safe, false otherwise.
      *
-     * @param any $scan_fh
-     * @param any $socket
-     * @param any $file
+     * @param $scan_fh
+     * @param $socket
+     * @param $file
      * @return bool
      */
     private static function scanStreamSend($scan_fh, $socket, $file): bool
