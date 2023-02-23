@@ -21,8 +21,8 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit --filter FileUploadTest",
-        "test-coverage": "vendor/bin/phpunit --filter FileUploadTest --coverage-html coverage"
+        "test": "vendor/bin/phpunit --filter Ikechukwukalu\\Clamavfileupload\\Test\\FileUploadTest",
+        "test-coverage": "vendor/bin/phpunit --filter Ikechukwukalu\\Clamavfileupload\\Test\\FileUploadTest --coverage-html coverage"
     },
     "authors": [
         {
