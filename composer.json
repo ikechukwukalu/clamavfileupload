@@ -26,7 +26,8 @@
     },
     "authors": [
         {
-            "name": "Ikechukwu Kalu"
+            "name": "Ikechukwu Kalu",
+            "email": "ea.ikechukwukalu@gmail.com"
         }
     ],
     "minimum-stability": "dev",

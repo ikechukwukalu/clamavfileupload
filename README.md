@@ -4,10 +4,9 @@
 [![Quality Score](https://img.shields.io/scrutinizer/quality/g/ikechukwukalu/clamavfileupload/main?style=flat-square)](https://scrutinizer-ci.com/g/ikechukwukalu/clamavfileupload/)
 [![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/ikechukwukalu/clamavfileupload/clamavfileupload.yml?branch=main&style=flat-square)](https://github.com/ikechukwukalu/clamavfileupload/actions/workflows/clamavfileupload.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/ikechukwukalu/clamavfileupload?style=flat-square)](https://packagist.org/packages/ikechukwukalu/clamavfileupload)
-[![Licence](https://img.shields.io/packagist/l/ikechukwukalu/clamavfileupload?style=flat-square)](https://packagist.org/packages/ikechukwukalu/clamavfileupload)
+[![Licence](https://img.shields.io/packagist/l/ikechukwukalu/clamavfileupload?style=flat-square)](https://github.com/ikechukwukalu/clamavfileupload/blob/main/LICENSE.md)
 
-A simple File upload Laravel package with ClamAV anti-virus scan. This library
-was built riding on an existing clamav php library [kissit/php-clamav-scan](https://github.com/kissit/php-clamav-scan).
+A simple File upload Laravel package with ClamAV anti-virus scan. This library was built riding on an existing clamav php library [kissit/php-clamav-scan](https://github.com/kissit/php-clamav-scan).
 
 ## REQUIREMENTS
 
