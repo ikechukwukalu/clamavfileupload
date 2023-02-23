@@ -51,5 +51,3 @@ jobs:
         run: composer install
       - name: "Execute unit tests"
         run: "composer run-script test"
-      - name: "Upload coverage to Codecov"
-        uses: "codecov/codecov-action@v2"
