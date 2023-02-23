@@ -52,8 +52,6 @@ jobs:
           sudo touch /var/run/clamav/clamd.sock
           sudo chown clamav:clamav /var/run/clamav/clamd.sock
           sudo chmod 755 /var/run/clamd.scan
-          cd /var/run/clamav
-          sudo clamd
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
