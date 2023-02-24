@@ -32,14 +32,14 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": "^8.1",
-        "laravel/framework": "^10.0",
-        "predis/predis": "^2.1"
+        "php": ">=8.0",
+        "laravel/framework": "^9.0|^10.0",
+        "predis/predis": "^2.0|^2.1"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",
-        "phpunit/phpunit": "^10.0",
-        "orchestra/testbench": "^8.0",
+        "orchestra/testbench": "^7.0|^8.0",
+        "phpunit/phpunit": "^9.0|^10.0",
         "php-parallel-lint/php-parallel-lint": "dev-develop"
     },
     "extra": {

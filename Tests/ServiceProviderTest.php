@@ -2,7 +2,6 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Tests;
 
-use Illuminate\Support\ServiceProvider;
 use Ikechukwukalu\Clamavfileupload\ClamavFileUploadServiceProvider;
 
 class ServiceProviderTest extends TestCase
