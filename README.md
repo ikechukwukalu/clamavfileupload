@@ -10,8 +10,8 @@ A simple File upload Laravel package with ClamAV anti-virus scan. This library w
 
 ## REQUIREMENTS
 
-- PHP 8.1+
-- Laravel 10+
+- PHP 8.0+
+- Laravel 9+
 - Clamav
 
 ## STEPS TO INSTALL
