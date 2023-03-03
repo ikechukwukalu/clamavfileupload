@@ -2,6 +2,7 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Foundation;
 
+use Ikechukwukalu\Clamavfileupload\Events\SavedFilesIntoDB;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -329,7 +330,10 @@ class FileUpload
         }
 
         if (FileUploadModel::insert($data)) {
-            return FileUploadModel::where('ref', self::$ref)->get();
+            $files = FileUploadModel::where('ref', self::$ref)->get();
+            SavedFilesIntoDB::dispatch($files, self::$ref);
+
+            return $files;
         }
 
         return null;
@@ -342,6 +346,12 @@ class FileUpload
      */
     protected static function insertSingleFile(): ?FileUploadModel
     {
-        return FileUploadModel::create(self::getFileModelData());
+        if ($file = FileUploadModel::create(self::getFileModelData())) {
+            SavedFilesIntoDB::dispatch($file, self::$ref);
+
+            return $files;
+        }
+
+        return null;
     }
 }

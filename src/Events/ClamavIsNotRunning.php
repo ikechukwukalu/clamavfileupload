@@ -2,7 +2,7 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Events;
 
-class ClamavFileScan extends ClamavEvent
+class ClamavIsNotRunning extends ClamavEvent
 {
 
 }

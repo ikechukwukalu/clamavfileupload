@@ -183,26 +183,49 @@ use Illuminate\Support\Facades\Crypt;
 
 ```php
 /**
- * Dispatches when \Ikechukwukalu\Clamavfileupload\Facade\FileUpload::uploadFiles()
+ * Dispatches when FileUpload::uploadFiles()
  * is called.
+ *
  */
 \Ikechukwukalu\Clamavfileupload\Events\ClamavFileScan::class
 
 /**
- * Dispatches when \Ikechukwukalu\Clamavfileupload\Facade\QueuedFileUpload::uploadFiles()
+ * Dispatches when QueuedFileUpload::uploadFiles()
  * is called.
+ *
+ * @param  array  $tmpFiles
+ * @param  array  $settings
+ * @param  string  $ref
  */
 \Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan::class
 
 /**
  * Dispatches when all files scanned are safe.
+ *
+ * @param  array  $scanData
  */
 \Ikechukwukalu\Clamavfileupload\Events\FileScanPass::class
 
 /**
  * Dispatches when a file scanned has a problem.
+ *
+ * @param  array  $scanData
  */
 \Ikechukwukalu\Clamavfileupload\Events\FileScanFail::class
+
+/**
+ * Dispatches when a file scanned has a problem.
+ *
+ * @param  FileUploadModel|EloquentCollection $files
+ * @param  string  $ref
+ */
+\Ikechukwukalu\Clamavfileupload\Events\SavedFilesIntoDB::class
+
+/**
+ * Dispatches when clamav is not running.
+ *
+ */
+\Ikechukwukalu\Clamavfileupload\Events\ClamavIsNotRunning::class
 ```
 
 ### NOTE

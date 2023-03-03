@@ -2,6 +2,8 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Trait;
 
+use Ikechukwukalu\Clamavfileupload\Events\ClamavIsNotRunning;
+
 /*
  * ClamAV.php
  *
@@ -95,6 +97,8 @@ trait ClamAV {
         }
 
         self::$message = trans('clamavfileupload::clamav.not_running');
+        ClamavIsNotRunning::dispatch();
+
         return false;
     }
 
@@ -115,6 +119,8 @@ trait ClamAV {
         $scan = self::send("SCAN $file");
         if($scan === false) {
             self::$message = trans('clamavfileupload::clamav.not_running');
+            ClamavIsNotRunning::dispatch();
+
             return false;
         }
 
@@ -141,6 +147,8 @@ trait ClamAV {
         $socket = self::socket();
         if(!$socket) {
             self::$message = trans('clamavfileupload::clamav.not_running');
+            ClamavIsNotRunning::dispatch();
+
             return false;
         }
 
@@ -187,6 +195,8 @@ trait ClamAV {
 
         if($scan === false) {
             self::$message = trans('clamavfileupload::clamav.not_running');
+            ClamavIsNotRunning::dispatch();
+
             return false;
         }
 
