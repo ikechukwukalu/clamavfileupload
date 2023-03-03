@@ -10,8 +10,9 @@ use Ikechukwukalu\Clamavfileupload\Events\ClamavIsNotRunning;
 use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanFail;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanPass;
-use Ikechukwukalu\Clamavfileupload\Listeners\ClamavFileUpload;
 use Ikechukwukalu\Clamavfileupload\Events\SavedFilesIntoDB;
+use Ikechukwukalu\Clamavfileupload\Listeners\ClamavFileUpload;
+use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 
 class EventsTest extends TestCase
 {
@@ -75,14 +76,14 @@ class EventsTest extends TestCase
     public function test_saved_files_into_db_event(): void
     {
         $event = Event::fake();
-        SavedFilesIntoDB::dispatch([]);
+        SavedFilesIntoDB::dispatch(new FileUploadModel, (string) str::uuid());
         $event->assertDispatched(SavedFilesIntoDB::class);
     }
 
     public function test_clamav_is_not_running_event(): void
     {
         $event = Event::fake();
-        ClamavIsNotRunning::dispatch([]);
+        ClamavIsNotRunning::dispatch();
         $event->assertDispatched(ClamavIsNotRunning::class);
     }
 }
