@@ -102,13 +102,14 @@ class ClamavFileUpload extends FileUpload
                                 self::$request->file(self::$input));
 
         if (self::$scanData['status']) {
+            FileScanPass::dispatch(self::$scanData);
             return true;
         }
 
         self::logScanData(self::$scanData['error']);
         FileScanFail::dispatch(self::$scanData);
 
-        return self::$scanData['status'];
+        return false;
     }
 
     /**
@@ -129,7 +130,7 @@ class ClamavFileUpload extends FileUpload
                 self::logScanData(self::$scanData['error']);
                 FileScanFail::dispatch(self::$scanData);
 
-                return self::$scanData['status'];
+                return false;
             }
 
             $i ++;
