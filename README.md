@@ -68,6 +68,12 @@ FileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|Elo
  * Access last scan results
  */
 FileUpload::$scanData
+
+/**
+ * Make sure to save the $ref UUID so as to be
+ * able to retrieve the uploaded file(s) from the database.
+ */
+FileUpload::$ref
 ```
 
 ### QUEUED CLAMAV SCAN FILE UPLOAD
@@ -105,7 +111,7 @@ QueuedFileUpload::uploadFiles($request, $settings); //returns bool|FileUploadMod
 
 /**
  * Make sure to save the $ref UUID so as to be
- * able to retrieve uploaded files from the database.
+ * able to retrieve the uploaded file(s) from the database.
  */
 QueuedFileUpload::$ref
 ```
@@ -138,9 +144,10 @@ $settings = [
 NoClamavFileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
 
 /**
- * Access last scan results
+ * Make sure to save the $ref UUID so as to be
+ * able to retrieve the uploaded file(s) from the database.
  */
-FileUpload::$scanData
+NoClamavFileUpload::$ref
 ```
 
 ### HASH
