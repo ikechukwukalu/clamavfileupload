@@ -214,7 +214,7 @@ use Illuminate\Support\Facades\Crypt;
 \Ikechukwukalu\Clamavfileupload\Events\FileScanFail::class
 
 /**
- * Dispatches when a file scanned has a problem.
+ * Dispatches when files have been saved into the Database.
  *
  * @param  FileUploadModel|EloquentCollection $files
  * @param  string  $ref
