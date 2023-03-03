@@ -6,10 +6,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Ikechukwukalu\Clamavfileupload\Events\ClamavFileScan;
+use Ikechukwukalu\Clamavfileupload\Events\ClamavIsNotRunning;
 use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanFail;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanPass;
 use Ikechukwukalu\Clamavfileupload\Listeners\ClamavFileUpload;
+use Ikechukwukalu\Clamavfileupload\Events\SavedFilesIntoDB;
 
 class EventsTest extends TestCase
 {
@@ -68,5 +70,19 @@ class EventsTest extends TestCase
         $event = Event::fake();
         FileScanPass::dispatch([]);
         $event->assertDispatched(FileScanPass::class);
+    }
+
+    public function test_saved_files_into_db_event(): void
+    {
+        $event = Event::fake();
+        SavedFilesIntoDB::dispatch([]);
+        $event->assertDispatched(SavedFilesIntoDB::class);
+    }
+
+    public function test_clamav_is_not_running_event(): void
+    {
+        $event = Event::fake();
+        ClamavIsNotRunning::dispatch([]);
+        $event->assertDispatched(ClamavIsNotRunning::class);
     }
 }
