@@ -23,5 +23,7 @@ class FileUpload extends Model
         'path',
         'url',
         'folder',
+        'hashed',
     ];
+
 }

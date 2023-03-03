@@ -36,6 +36,6 @@ return [
     /**
      * bool - should file upload be processed in a queue. Default true
      */
-    'hash_file_name' => env('HASH_FILE_NAME', false),
+    'hashed' => env('HASHED', false),
 
 ];

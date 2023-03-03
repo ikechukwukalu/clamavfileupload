@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -184,12 +185,42 @@ class FileUpload
     /**
      * Set file name.
      *
-     * @param $file
      * @return  string
      */
     protected static function setFileName(): string
     {
         return time() . Str::random(40);
+    }
+
+    /**
+     * Save file name in database.
+     *
+     * @param $file
+     * @return  string
+     */
+    protected static function saveFileNameInDB($fileName): string
+    {
+        if (config('clamavfileupload.hashed', false)) {
+            return Crypt::encryptString($fileName);
+        }
+
+        return $fileName;
+    }
+
+    /**
+     * Save file name in database.
+     *
+     * @param $file
+     * @return  string
+     */
+    protected static function saveURLInDB($relativeFilePath): string
+    {
+        if (config('clamavfileupload.hashed', false)) {
+            return Crypt::encryptString(asset(self::storageDisk()
+                    ->url($relativeFilePath)));
+        }
+
+        return $relativeFilePath;
     }
 
     /**
@@ -270,14 +301,15 @@ class FileUpload
         return [
             'ref' => self::$ref,
             'name' => self::getName($file, $i),
-            'file_name' => $fileName,
-            'url' => asset(self::storageDisk()->url($relativeFilePath)),
+            'file_name' => self::saveFileNameInDB($fileName),
+            'url' => self::saveURLInDB($relativeFilePath),
             'size' => self::storageDisk()->size($relativeFilePath),
             'extension' => self::getExtension($file),
             'disk' => self::getDisk(),
             'mime_type' => self::storageDisk()->mimeType($relativeFilePath),
             'path' => self::storageDisk()->path($relativeFilePath),
             'folder' => self::$folder,
+            'hashed' => config('clamavfileupload.hashed', false)
         ];
     }
 

@@ -31,7 +31,7 @@ FILE_UPLOAD_INPUT=file
 FILE_UPLOAD_PATH=public
 FILE_UPLOAD_DISK=local
 FILE_UPLOAD_LOG_SCAN_DATA=false
-HASH_FILE_NAME=false
+HASHED=false
 ```
 
 - `php artisan vendor:publish --tag=cfu-migrations`
@@ -143,6 +143,35 @@ NoClamavFileUpload::uploadFiles($request, $settings); //returns bool|FileUploadM
 FileUpload::$scanData
 ```
 
+### HASH
+
+If the `HASHED` param within your `.env` is set to `true` both `file_name` and `url` fields will be encrypted before they are saved into the DB.
+
+It might be helpful to extend the Model file `Ikechukwukalu\Clamavfileupload\Models\FileUpload` and add the following code:
+
+``` php
+use Illuminate\Support\Facades\Crypt;
+
+
+    protected function getFileNameAttribute($value)
+    {
+        if ($this->hashed) {
+            return Crypt::decryptString($value);
+        }
+
+        return $value;
+    }
+
+    protected function getUrlAttribute($value)
+    {
+        if ($this->hashed) {
+            return Crypt::decryptString($value);
+        }
+
+        return $value;
+    }
+```
+
 ## EVENTS
 
 ```php
@@ -187,6 +216,7 @@ protected $fillable = [
     'path',
     'url',
     'folder',
+    'hashed',
 ];
 ```
 

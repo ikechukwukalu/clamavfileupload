@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('file_uploads', function (Blueprint $table) {
             $table->string('folder')->after('url')->nullable();
+            $table->tinyInteger('hashed')->after('folder')->default(0);
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('file_uploads', function (Blueprint $table) {
-            $table->dropColumn(['folder']);
+            $table->dropColumn(['folder', 'hashed']);
         });
     }
 };
