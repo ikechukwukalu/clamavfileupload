@@ -31,12 +31,13 @@ FILE_UPLOAD_INPUT=file
 FILE_UPLOAD_PATH=public
 FILE_UPLOAD_DISK=local
 FILE_UPLOAD_LOG_SCAN_DATA=false
+HASH_FILE_NAME=false
 ```
 
 - `php artisan vendor:publish --tag=cfu-migrations`
 - `php artisan migrate`
 
-### FILE UPLOAD
+### CLAMAV SCAN FILE UPLOAD
 
 ```php
 use Ikechukwukalu\Clamavfileupload\Facade\FileUpload;
@@ -69,10 +70,9 @@ FileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|Elo
 FileUpload::$scanData
 ```
 
-### QUEUED FILE UPLOAD
+### QUEUED CLAMAV SCAN FILE UPLOAD
 
-This process stores the file in a `tmp` directory and sets up a queue for
-the clamav scan and uploads the `tmp` files to their designated directory. Files will be removed from the `tmp` directory at the end of the process.
+This process stores the file in a `tmp` directory and sets up a queue for the clamav scan and uploads the `tmp` files to their designated directory. At the end of the process temp files would have been removed from the `tmp` directory.
 
 - Set `REDIS_CLIENT=predis` and `QUEUE_CONNECTION=redis` within your `.env` file.
 - `php artisan queue:work`
@@ -108,6 +108,39 @@ QueuedFileUpload::uploadFiles($request, $settings); //returns bool|FileUploadMod
  * able to retrieve uploaded files from the database.
  */
 QueuedFileUpload::$ref
+```
+
+### NO CLAMAV SCAN FILE UPLOAD
+
+```php
+use Ikechukwukalu\Clamavfileupload\Facade\NoClamavFileUpload;
+
+
+NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollection
+
+/**
+ * Default settings
+ *
+ * 'name' => null // This is different from file name
+ * 'input' => config('clamavfileupload.input', 'file')
+ * 'folder' => null
+ * 'uploadPath' => config('clamavfileupload.path', 'public')
+ *
+ *
+ */
+
+/**
+ * You can also overwrite the default settings with custom settings
+ */
+$settings = [
+    'folder' => 'pdfs'
+];
+NoClamavFileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
+
+/**
+ * Access last scan results
+ */
+FileUpload::$scanData
 ```
 
 ## EVENTS
@@ -153,6 +186,7 @@ protected $fillable = [
     'mime_type',
     'path',
     'url',
+    'folder',
 ];
 ```
 

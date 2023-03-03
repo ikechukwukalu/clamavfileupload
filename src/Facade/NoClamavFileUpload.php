@@ -2,12 +2,12 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Facade;
 
-use Ikechukwukalu\Clamavfileupload\Events\ClamavFileScan;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
-use Illuminate\Http\Request;
+use Ikechukwukalu\Clamavfileupload\Support\BasicFileUpload;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Http\Request;
 
-class FileUpload extends FileUploadLogic
+class NoClamavFileUpload extends FileUploadLogic
 {
     /**
      * Upload single or multiple files.
@@ -35,11 +35,11 @@ class FileUpload extends FileUploadLogic
      */
     protected static function runFileUpload(): bool|FileUploadModel|EloquentCollection
     {
-        ClamavFileScan::dispatch();
-        if ($data = self::fileUpload()) {
+        if ($data = BasicFileUpload::fileUpload()) {
             return $data;
         }
 
         return false;
     }
+
 }

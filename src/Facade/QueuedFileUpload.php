@@ -25,7 +25,7 @@ class QueuedFileUpload extends FileUploadLogic
     {
         self::customFileUploadSettings($settings);
         self::fileUploadSettings($request);
-        return self::clamavFileUpload($settings);
+        return self::runFileUpload($settings);
     }
 
     /**
@@ -34,7 +34,7 @@ class QueuedFileUpload extends FileUploadLogic
      * @param  array  $settings
      * @return  bool
      */
-    protected static function clamavFileUpload(array $settings = []): bool
+    protected static function runFileUpload(array $settings = []): bool
     {
         $tmpFiles = TemporaryFileUpload::storeFiles();
         self::$ref = self::setRef();

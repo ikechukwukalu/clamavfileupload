@@ -24,11 +24,12 @@ abstract class FileUploadLogic extends ClamavFileUpload
     /**
      * Run files scan and upload.
      *
+     * @param  array  $settings
      * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
      * @return  \Illuminate\Database\Eloquent\Collection
      * @return  bool
      */
-    abstract protected static function clamavFileUpload(): bool|FileUploadModel|EloquentCollection;
+    abstract protected static function runFileUpload(): bool|FileUploadModel|EloquentCollection;
 
     /**
      * Customise file upload settings.
@@ -47,11 +48,9 @@ abstract class FileUploadLogic extends ClamavFileUpload
         }
 
         foreach (self::defaultFileUploadSettings() as $key => $setting) {
-            if (array_key_exists($key, $settings)) {
-                continue;
+            if (!array_key_exists($key, $settings)) {
+                self::${$key} = $setting;
             }
-
-            self::${$key} = $setting;
         }
 
         if (self::$folder) {

@@ -33,5 +33,9 @@ return [
      * string - Default 'local'
      */
     'disk' => env('FILE_UPLOAD_DISK', 'local'),
+    /**
+     * bool - should file upload be processed in a queue. Default true
+     */
+    'hash_file_name' => env('HASH_FILE_NAME', false),
 
 ];

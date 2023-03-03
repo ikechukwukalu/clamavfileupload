@@ -22,5 +22,6 @@ class FileUpload extends Model
         'mime_type',
         'path',
         'url',
+        'folder',
     ];
 }

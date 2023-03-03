@@ -277,6 +277,7 @@ class FileUpload
             'disk' => self::getDisk(),
             'mime_type' => self::storageDisk()->mimeType($relativeFilePath),
             'path' => self::storageDisk()->path($relativeFilePath),
+            'folder' => self::$folder,
         ];
     }
 
