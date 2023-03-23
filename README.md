@@ -53,6 +53,7 @@ FileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollec
  * 'input' => config('clamavfileupload.input', 'file')
  * 'folder' => null
  * 'uploadPath' => config('clamavfileupload.path', 'public')
+ * 'hashed' => config('clamavfileupload.hashed', false)
  *
  *
  */
@@ -97,6 +98,7 @@ QueuedFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloquent
  * 'input' => config('clamavfileupload.input', 'file')
  * 'folder' => null
  * 'uploadPath' => config('clamavfileupload.path', 'public')
+ * 'hashed' => config('clamavfileupload.hashed', false)
  *
  *
  */
@@ -132,6 +134,7 @@ NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloque
  * 'input' => config('clamavfileupload.input', 'file')
  * 'folder' => null
  * 'uploadPath' => config('clamavfileupload.path', 'public')
+ * 'hashed' => config('clamavfileupload.hashed', false)
  *
  *
  */

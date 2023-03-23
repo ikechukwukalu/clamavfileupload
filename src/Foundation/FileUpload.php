@@ -21,6 +21,7 @@ class FileUpload
     public static string $ref;
     public static ?string $folder;
     public static string $uploadPath;
+    public static bool $hashed;
     public static array $scanData;
 
     /**
