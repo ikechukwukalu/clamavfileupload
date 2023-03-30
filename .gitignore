@@ -6,3 +6,4 @@
 composer.lock
 phpunit.xml.bak
 /Tests/tmp
+/node_modules
