@@ -2,7 +2,7 @@
 
 - Added hashed option to settings
 
-# v1.0.1
+## v1.0.1
 
 - Added NoClamavFileUpload
 - Added folder and hashed field to db
