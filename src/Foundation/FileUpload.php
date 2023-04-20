@@ -350,7 +350,7 @@ class FileUpload
         if ($file = FileUploadModel::create(self::getFileModelData())) {
             SavedFilesIntoDB::dispatch($file, self::$ref);
 
-            return $files;
+            return $file;
         }
 
         return null;

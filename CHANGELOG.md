@@ -1,4 +1,8 @@
-# v1.0.2
+# v1.0.3
+
+- Fixed minor bug in `packages/ikechukwukalu/clamavfileupload/src/Foundation/FileUpload.php` on `L353`
+
+## v1.0.2
 
 - Added hashed option to settings
 
