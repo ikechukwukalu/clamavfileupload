@@ -83,7 +83,7 @@ FileUpload::$ref
 
 This process stores the file in a `tmp` directory and sets up a queue for the clamav scan and uploads the `tmp` files to their designated directory. At the end of the process temp files would have been removed from the `tmp` directory.
 
-- Set `REDIS_CLIENT=predis` and `QUEUE_CONNECTION=redis` within your `.env` file.
+- To use `Redis` set `REDIS_CLIENT=predis` and `QUEUE_CONNECTION=redis` within your `.env` file.
 - `php artisan queue:work`
 
 ```php
