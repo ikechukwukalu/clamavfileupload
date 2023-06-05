@@ -1,4 +1,8 @@
-# v1.0.3
+# v1.0.4
+
+- Added Accesor for `url` field
+
+## v1.0.3
 
 - Fixed minor bug in `packages/ikechukwukalu/clamavfileupload/src/Foundation/FileUpload.php` on `L353`
 
