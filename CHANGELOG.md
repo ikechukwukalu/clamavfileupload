@@ -1,6 +1,6 @@
 # v1.0.6
 
-- Set file visibility
+- Make file visibility adjustable on file upload
 
 ## v1.0.5
 
