@@ -217,6 +217,8 @@ class FileUpload
      */
     protected static function saveURLInDB($relativeFilePath): string
     {
+        $relativeFilePath = Storage::url($relativeFilePath);
+
         if (config('clamavfileupload.hashed', false)) {
             return Crypt::encryptString(asset(self::storageDisk()
                     ->url($relativeFilePath)));

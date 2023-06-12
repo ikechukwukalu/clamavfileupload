@@ -1,5 +1,9 @@
 # v1.0.4
 
+- Improve file url code
+
+## v1.0.4
+
 - Added Accesor for `url` field
 
 ## v1.0.3
