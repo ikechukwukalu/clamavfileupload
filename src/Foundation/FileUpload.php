@@ -22,6 +22,7 @@ class FileUpload
     public static ?string $folder;
     public static string $uploadPath;
     public static bool $hashed;
+    public static bool $visible;
     public static array $scanData;
 
     /**
@@ -80,8 +81,14 @@ class FileUpload
 
         $i = 1;
         foreach (self::$request->file(self::$input) as $file) {
-            $disk->putFileAs("", $file, self::$fileName . "_{$i}" .
-                    self::getExtension($file));
+            $fileName = self::$fileName . "_{$i}" . self::getExtension($file);
+
+            $disk->putFileAs("", $file, $fileName);
+
+            if (self::$visible) {
+                Storage::setVisibility($fileName, 'public');
+            }
+
             $i ++;
         }
 
@@ -97,9 +104,14 @@ class FileUpload
      */
     protected static function saveSingleFile(?string $fileName = null): bool|array
     {
+        $fileName = self::$fileName . self::getExtension();
+
         self::provideDisk()->putFileAs("",
-                self::$request->file(self::$input),
-                self::$fileName . self::getExtension());
+                self::$request->file(self::$input), $fileName);
+
+        if (self::$visible) {
+            Storage::setVisibility($fileName, 'public');
+        }
 
         return true;
     }

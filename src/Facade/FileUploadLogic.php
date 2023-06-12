@@ -39,7 +39,7 @@ abstract class FileUploadLogic extends ClamavFileUpload
      */
     public static function customFileUploadSettings(array $settings = []): void
     {
-        $whiteList = ['name', 'input', 'folder', 'uploadPath', 'hashed'];
+        $whiteList = ['name', 'input', 'folder', 'uploadPath', 'hashed', 'visible'];
 
         foreach ($settings as $key => $setting) {
             if (in_array($key, $whiteList)) {
@@ -83,7 +83,8 @@ abstract class FileUploadLogic extends ClamavFileUpload
             'input' => config('clamavfileupload.input', 'file'),
             'folder' => null,
             'uploadPath' => config('clamavfileupload.path', 'public'),
-            'hashed' => config('clamavfileupload.hashed', false)
+            'hashed' => config('clamavfileupload.hashed', false),
+            'visible' => config('clamavfileupload.visible', true)
         ];
     }
 

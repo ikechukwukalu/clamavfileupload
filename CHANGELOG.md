@@ -1,4 +1,8 @@
-# v1.0.4
+# v1.0.6
+
+- Set file visibility
+
+## v1.0.5
 
 - Improve file url saved into DB
 

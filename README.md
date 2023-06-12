@@ -34,6 +34,7 @@ FILE_UPLOAD_PATH=public
 FILE_UPLOAD_DISK=local
 FILE_UPLOAD_LOG_SCAN_DATA=false
 HASHED=false
+VISIBLE=true
 ```
 
 - `php artisan vendor:publish --tag=cfu-migrations`
@@ -55,6 +56,7 @@ FileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollec
  * 'folder' => null
  * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
+ * 'visible' => config('clamavfileupload.visible', true)
  *
  *
  */
@@ -100,6 +102,7 @@ QueuedFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloquent
  * 'folder' => null
  * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
+ * 'visible' => config('clamavfileupload.visible', true)
  *
  *
  */
@@ -136,6 +139,7 @@ NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloque
  * 'folder' => null
  * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
+ * 'visible' => config('clamavfileupload.visible', true)
  *
  *
  */
