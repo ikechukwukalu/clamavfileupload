@@ -1,6 +1,6 @@
 # v1.0.4
 
-- Improve file url code
+- Improve file url saved into DB
 
 ## v1.0.4
 
