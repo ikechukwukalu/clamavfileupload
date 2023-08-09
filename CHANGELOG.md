@@ -4,6 +4,7 @@
 - Fixed file scan bug for s3 Disk
 - Added file scan for s3 disk over local `tmp` folder before uploading to s3 bucket
 - Added Hashing options for file path
+- Fixed vulnerability issue(s) found by snyk test
 
 ## v1.0.6
 
