@@ -161,7 +161,7 @@ NoClamavFileUpload::$ref
 
 ### HASH
 
-If the `HASHED` param within your `.env` is set to `true` both `file_name` and `url` fields will be encrypted before they are saved into the DB.
+If the `HASHED` param within your `.env` is set to `true` the `file_name`, `path` and `url` fields will be encrypted before they are saved into the DB.
 
 It might be helpful to extend the Model file `Ikechukwukalu\Clamavfileupload\Models\FileUpload` and add the following code:
 
@@ -241,6 +241,7 @@ use Illuminate\Support\Facades\Crypt;
 
 - When a single file scanned fails, the process is ended and every uploaded file is removed.
 - Every batch of uploaded files has a `$ref` UUID assigned to them.
+- When using `s3` disk, files are first stored in a `tmp` directory using the `local` disk where they will be scanned before being uploaded to the `s3` bucket
 - Model file `Ikechukwukalu\Clamavfileupload\Models\FileUpload`
 
 ```php
