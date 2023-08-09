@@ -107,10 +107,10 @@ class FileUpload
         if (self::$visible) {
             self::provideDisk()->putFileAs(self::$uploadPath,
                     self::$request->file(self::$input), $fileName, 'public');
+        } else {
+            self::provideDisk()->putFileAs(self::$uploadPath,
+                    self::$request->file(self::$input), $fileName);
         }
-
-        self::provideDisk()->putFileAs(self::$uploadPath,
-                self::$request->file(self::$input), $fileName);
 
         return true;
     }
