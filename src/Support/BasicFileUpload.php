@@ -2,7 +2,6 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Support;
 
-use Illuminate\Http\Request;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
@@ -29,6 +28,6 @@ class BasicFileUpload extends FileUpload
             return self::insertSingleFile();
         }
 
-        return null;
+        return false;
     }
 }

@@ -24,12 +24,12 @@ abstract class FileUploadLogic extends ClamavFileUpload
     /**
      * Run files scan and upload.
      *
-     * @param  array  $settings
+     * @param  array $settings
      * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
      * @return  \Illuminate\Database\Eloquent\Collection
      * @return  bool
      */
-    abstract protected static function runFileUpload(): bool|FileUploadModel|EloquentCollection;
+    abstract protected static function runFileUpload(array $settings = []): bool|FileUploadModel|EloquentCollection;
 
     /**
      * Customise file upload settings.

@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/ikechukwukalu/clamavfileupload?style=flat-square)](https://packagist.org/packages/ikechukwukalu/clamavfileupload)
 [![Quality Score](https://img.shields.io/scrutinizer/quality/g/ikechukwukalu/clamavfileupload/main?style=flat-square)](https://scrutinizer-ci.com/g/ikechukwukalu/clamavfileupload/)
 [![Code Quality](https://img.shields.io/codefactor/grade/github/ikechukwukalu/clamavfileupload?style=flat-square)](https://www.codefactor.io/repository/github/ikechukwukalu/clamavfileupload)
-[![Vulnerability](https://img.shields.io/snyk/vulnerabilities/github/ikechukwukalu/clamavfileupload?style=flat-square)](https://security.snyk.io/package/composer/ikechukwukalu%2Fclamavfileupload)
+[![Known Vulnerabilities](https://snyk.io/test/github/ikechukwukalu/clamavfileupload/badge.svg?style=flat-square)](https://security.snyk.io/package/composer/ikechukwukalu%2Fclamavfileupload)
 [![Github Workflow Status](https://img.shields.io/github/actions/workflow/status/ikechukwukalu/clamavfileupload/clamavfileupload.yml?branch=main&style=flat-square)](https://github.com/ikechukwukalu/clamavfileupload/actions/workflows/clamavfileupload.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/ikechukwukalu/clamavfileupload?style=flat-square)](https://packagist.org/packages/ikechukwukalu/clamavfileupload)
 [![Licence](https://img.shields.io/packagist/l/ikechukwukalu/clamavfileupload?style=flat-square)](https://github.com/ikechukwukalu/clamavfileupload/blob/main/LICENSE.md)

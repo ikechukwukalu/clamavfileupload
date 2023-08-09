@@ -1,4 +1,11 @@
-# v1.0.6
+# v1.0.7
+
+- Fixed file URL bug for s3 disk
+- Fixed file scan bug for s3 Disk
+- Added file scan for s3 disk over local `tmp` folder before uploading to s3 bucket
+- Added Hashing options for file path
+
+## v1.0.6
 
 - Make file visibility adjustable on file upload
 

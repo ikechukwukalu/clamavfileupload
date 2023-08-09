@@ -23,17 +23,18 @@ class NoClamavFileUpload extends FileUploadLogic
     {
         self::customFileUploadSettings($settings);
         self::fileUploadSettings($request);
-        return self::runFileUpload();
+        return self::runFileUpload($settings);
     }
 
     /**
      * Run files scan and upload.
      *
+     * @param  array $settings
      * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
      * @return  \Illuminate\Database\Eloquent\Collection
      * @return  bool
      */
-    protected static function runFileUpload(): bool|FileUploadModel|EloquentCollection
+    protected static function runFileUpload($settings = []): bool|FileUploadModel|EloquentCollection
     {
         if ($data = BasicFileUpload::fileUpload()) {
             return $data;

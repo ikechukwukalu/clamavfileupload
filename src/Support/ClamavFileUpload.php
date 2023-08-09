@@ -2,9 +2,9 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Support;
 
-use Illuminate\Http\Request;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Facades\Storage;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanPass;
 use Ikechukwukalu\Clamavfileupload\Events\FileScanFail;
 use Ikechukwukalu\Clamavfileupload\Trait\ClamAV;
@@ -37,7 +37,7 @@ class ClamavFileUpload extends FileUpload
             return self::insertSingleFile();
         }
 
-        return null;
+        return false;
     }
 
     /**
@@ -97,8 +97,16 @@ class ClamavFileUpload extends FileUpload
     private static function isSingleFileSafe(): bool
     {
         [$fileName, $relativeFilePath] = self::fileNameAndPath();
+        $storageDisk = self::storageDisk();
 
-        self::$scanData = self::scanFile(self::storageDisk()->path($relativeFilePath),
+        if (self::getDisk() !== 'public'
+            && self::getDisk() !== 'local'
+        ) {
+            [$storageDisk, $relativeFilePath] =
+                self::getTempDiskAndPath();
+        }
+
+        self::$scanData = self::scanFile($storageDisk->path($relativeFilePath),
                                 self::$request->file(self::$input));
 
         if (self::$scanData['status']) {
@@ -120,10 +128,19 @@ class ClamavFileUpload extends FileUpload
     private static function areMultipleFilesSafe(): bool
     {
         $i = 1;
+        $storageDisk = self::storageDisk();
+
         foreach (self::$request->file(self::$input) as $file) {
             [$fileName, $relativeFilePath] = self::fileNameAndPath($file, $i);
 
-            self::$scanData = self::scanFile(self::storageDisk()->path($relativeFilePath),
+            if (self::getDisk() !== 'public'
+                && self::getDisk() !== 'local'
+            ) {
+                [$storageDisk, $relativeFilePath] =
+                    self::getTempDiskAndPath($file);
+            }
+
+            self::$scanData = self::scanFile($storageDisk->path($relativeFilePath),
                                 $file);
 
             if (!self::$scanData['status']) {
@@ -138,5 +155,18 @@ class ClamavFileUpload extends FileUpload
 
         FileScanPass::dispatch(self::$scanData);
         return true;
+    }
+
+    private static function getTempDiskAndPath(mixed $file = null): array
+    {
+        if (!$file) {
+            $file = self::$request->file(self::$input);
+        }
+
+        $storageDisk = Storage::disk('local');
+        $ary = explode('/', $file->getRealPath());
+        $relativeFilePath = 'tmp/' . array_pop($ary);
+
+        return [$storageDisk, $relativeFilePath];
     }
 }

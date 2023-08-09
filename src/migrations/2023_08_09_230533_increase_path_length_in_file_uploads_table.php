@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('file_uploads', function (Blueprint $table) {
-            $table->string('file_name', 1000)->change();
-            $table->string('url', 1000)->change();
+            $table->string('path', 1000)->change();
         });
     }
 
@@ -23,8 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('file_uploads', function (Blueprint $table) {
-            $table->string('file_name', 255)->change();
-            $table->string('url', 255)->change();
+            $table->string('path', 255)->change();
         });
     }
 };

@@ -45,10 +45,8 @@ class FileUpload
      */
     protected static function provideDisk(): Filesystem
     {
-        return Storage::build([
-            'driver' => self::getDisk(),
-            'root' => self::storageDisk()->path(self::$uploadPath),
-        ]);
+        self::storageDisk()->makeDirectory(self::$uploadPath);
+        return self::storageDisk();
     }
 
     /**
@@ -83,10 +81,10 @@ class FileUpload
         foreach (self::$request->file(self::$input) as $file) {
             $fileName = self::$fileName . "_{$i}" . self::getExtension($file);
 
-            $disk->putFileAs("", $file, $fileName);
-
             if (self::$visible) {
-                Storage::setVisibility($fileName, 'public');
+                $disk->putFileAs(self::$uploadPath, $file, $fileName, 'public');
+            } else {
+                $disk->putFileAs(self::$uploadPath, $file, $fileName);
             }
 
             $i ++;
@@ -106,12 +104,13 @@ class FileUpload
     {
         $fileName = self::$fileName . self::getExtension();
 
-        self::provideDisk()->putFileAs("",
-                self::$request->file(self::$input), $fileName);
-
         if (self::$visible) {
-            Storage::setVisibility($fileName, 'public');
+            self::provideDisk()->putFileAs(self::$uploadPath,
+                    self::$request->file(self::$input), $fileName, 'public');
         }
+
+        self::provideDisk()->putFileAs(self::$uploadPath,
+                self::$request->file(self::$input), $fileName);
 
         return true;
     }
@@ -222,21 +221,37 @@ class FileUpload
     }
 
     /**
-     * Save file name in database.
+     * Save file url in database.
      *
      * @param $file
      * @return  string
      */
     protected static function saveURLInDB($relativeFilePath): string
     {
-        $relativeFilePath = Storage::url($relativeFilePath);
+        $url = Storage::url($relativeFilePath);
 
         if (config('clamavfileupload.hashed', false)) {
-            return Crypt::encryptString(asset(self::storageDisk()
-                    ->url($relativeFilePath)));
+            return Crypt::encryptString($url);
         }
 
-        return $relativeFilePath;
+        return $url;
+    }
+
+    /**
+     * Save file path in database.
+     *
+     * @param $file
+     * @return  string
+     */
+    protected static function savePathInDB($relativeFilePath): string
+    {
+        $path = self::storageDisk()->path($relativeFilePath);
+
+        if (config('clamavfileupload.hashed', false)) {
+            return Crypt::encryptString($path);
+        }
+
+        return $path;
     }
 
     /**
@@ -323,7 +338,7 @@ class FileUpload
             'extension' => self::getExtension($file),
             'disk' => self::getDisk(),
             'mime_type' => self::storageDisk()->mimeType($relativeFilePath),
-            'path' => self::storageDisk()->path($relativeFilePath),
+            'path' => self::savePathInDB($relativeFilePath),
             'folder' => self::$folder,
             'hashed' => config('clamavfileupload.hashed', false)
         ];
