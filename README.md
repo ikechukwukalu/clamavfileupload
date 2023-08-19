@@ -164,7 +164,7 @@ $settings = [
     'folder' => 'pdfs'
 ];
 
-$fileUpload = new QueuedFileUpload;
+$fileUpload = new NoClamavFileUpload;
 $fileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
 
 /**
