@@ -1,4 +1,4 @@
-# v1.0.8
+# v2.0.0
 
 - Refactored code by removing static functions and switching to Facades.
 - Added `disk` option for custom settings
