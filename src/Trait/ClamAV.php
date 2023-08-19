@@ -43,20 +43,20 @@ use Ikechukwukalu\Clamavfileupload\Events\ClamavIsNotRunning;
 
 trait ClamAV {
 
-    private static $message;
+    private $message;
 
     /**
      * Private function to open a socket
      * to clamd based on the current options.
      */
-    private static function socket()
+    private function socket()
     {
         if(empty(config('clamavfileupload.clamd_ip')) && empty(config('clamavfileupload.clamd_ip'))) {
             // By default we just use the local socket
             $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
 
             if(socket_connect($socket, config('clamavfileupload.clamd_sock'))) {
-                self::$message = trans('clamavfileupload::clamav.socket_connected');
+                $this->message = trans('clamavfileupload::clamav.socket_connected');
                 return $socket;
             }
         }
@@ -65,11 +65,11 @@ trait ClamAV {
         $socket = socket_create(AF_INET, SOCK_STREAM, 0);
 
         if(socket_connect($socket, config('clamavfileupload.clamd_ip'), config('clamavfileupload.clamd_ip'))) {
-            self::$message = trans('clamavfileupload::clamav.socket_connected');
+            $this->message = trans('clamavfileupload::clamav.socket_connected');
             return $socket;
         }
 
-        self::$message = trans('clamavfileupload::clamav.unable_to_open_socket');
+        $this->message = trans('clamavfileupload::clamav.unable_to_open_socket');
         return false;
     }
 
@@ -78,9 +78,9 @@ trait ClamAV {
      *
      * @return string
      */
-    public static function getMessage(): string
+    public function getMessage(): string
     {
-        return self::$message;
+        return $this->message;
     }
 
     /**
@@ -88,15 +88,15 @@ trait ClamAV {
      *
      * @return bool
      */
-    public static function ping(): bool
+    public function ping(): bool
     {
-        $ping = self::send("PING");
+        $ping = $this->send("PING");
 
         if($ping == "PONG") {
             return true;
         }
 
-        self::$message = trans('clamavfileupload::clamav.not_running');
+        $this->message = trans('clamavfileupload::clamav.not_running');
         ClamavIsNotRunning::dispatch();
 
         return false;
@@ -108,17 +108,17 @@ trait ClamAV {
      *
      * @return bool
      */
-    public static function scan($file): bool
+    public function scan($file): bool
     {
         if(!file_exists($file)) {
-            self::$message = trans('clamavfileupload::clamav.file_not_found',
+            $this->message = trans('clamavfileupload::clamav.file_not_found',
                 ['name' => $file]);
             return false;
         }
 
-        $scan = self::send("SCAN $file");
+        $scan = $this->send("SCAN $file");
         if($scan === false) {
-            self::$message = trans('clamavfileupload::clamav.not_running');
+            $this->message = trans('clamavfileupload::clamav.not_running');
             ClamavIsNotRunning::dispatch();
 
             return false;
@@ -126,11 +126,11 @@ trait ClamAV {
 
         $scanMessage = trim(substr(strrchr($scan, ":"), 1));
         if($scanMessage == 'OK') {
-            self::$message = $scanMessage;
+            $this->message = $scanMessage;
             return true;
         }
 
-        self::$message = trans('clamavfileupload::clamav.file_not_safe',
+        $this->message = trans('clamavfileupload::clamav.file_not_safe',
             ['name' => $file]);
         return false;
     }
@@ -142,26 +142,26 @@ trait ClamAV {
      * @param $file
      * @return bool
      */
-    public static function scanStream($file): bool
+    public function scanStream($file): bool
     {
-        $socket = self::socket();
+        $socket = $this->socket();
         if(!$socket) {
-            self::$message = trans('clamavfileupload::clamav.not_running');
+            $this->message = trans('clamavfileupload::clamav.not_running');
             ClamavIsNotRunning::dispatch();
 
             return false;
         }
 
         if(!file_exists($file)) {
-            self::$message = trans('clamavfileupload::clamav.file_not_found');
+            $this->message = trans('clamavfileupload::clamav.file_not_found');
             return false;
         }
 
         if ($scan_fh = fopen($file, 'rb')) {
-            return self::scanStreamSend($scan_fh, $socket, $file);
+            return $this->scanStreamSend($scan_fh, $socket, $file);
         }
 
-        self::$message = trans('clamavfileupload::clamav.file_not_safe',
+        $this->message = trans('clamavfileupload::clamav.file_not_safe',
             ['name' => $file]);
         return false;
     }
@@ -176,7 +176,7 @@ trait ClamAV {
      * @param $file
      * @return bool
      */
-    private static function scanStreamSend($scan_fh, $socket, $file): bool
+    private function scanStreamSend($scan_fh, $socket, $file): bool
     {
         $chunksize = filesize($file) < 8192 ? filesize($file) : 8192;
         $command = "zINSTREAM\0";
@@ -194,7 +194,7 @@ trait ClamAV {
         socket_close($socket);
 
         if($scan === false) {
-            self::$message = trans('clamavfileupload::clamav.not_running');
+            $this->message = trans('clamavfileupload::clamav.not_running');
             ClamavIsNotRunning::dispatch();
 
             return false;
@@ -202,11 +202,11 @@ trait ClamAV {
 
         $scanMessage = trim(substr(strrchr($scan, ":"), 1));
         if($scanMessage == 'OK') {
-            self::$message = $scanMessage;
+            $this->message = $scanMessage;
             return true;
         }
 
-        self::$message = trans('clamavfileupload::clamav.file_not_safe',
+        $this->message = trans('clamavfileupload::clamav.file_not_safe',
             ['name' => $file]);
         return false;
     }
@@ -217,14 +217,14 @@ trait ClamAV {
      *
      * @return bool
      */
-    public static function send($command)
+    public function send($command)
     {
         if(empty($command)) {
             return false;
         }
 
         try {
-            $socket = self::socket();
+            $socket = $this->socket();
 
             if($socket) {
                 socket_send($socket, $command, strlen($command), 0);
@@ -234,7 +234,7 @@ trait ClamAV {
                 return trim($return);
             }
         } catch (\ErrorException $e) {
-            self::$message = $e->getMessage();
+            $this->message = $e->getMessage();
         }
 
         return false;

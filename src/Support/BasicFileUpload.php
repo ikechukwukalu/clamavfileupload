@@ -2,9 +2,9 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Support;
 
+use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
 
 class BasicFileUpload extends FileUpload
 {
@@ -16,16 +16,16 @@ class BasicFileUpload extends FileUpload
      * @return  \Illuminate\Database\Eloquent\Collection
      * @return  bool
      */
-    public static function fileUpload(): bool|FileUploadModel|EloquentCollection
+    public function fileUpload(): bool|FileUploadModel|EloquentCollection
     {
-        if(self::$request->file()) {
-            self::storeFiles();
+        if($this->request->file()) {
+            $this->storeFiles();
 
-            if (is_array(self::$request->file(self::$input))) {
-                return self::insertMultipleFiles();
+            if (is_array($this->request->file($this->input))) {
+                return $this->insertMultipleFiles();
             }
 
-            return self::insertSingleFile();
+            return $this->insertSingleFile();
         }
 
         return false;

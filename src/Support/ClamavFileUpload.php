@@ -10,9 +10,19 @@ use Ikechukwukalu\Clamavfileupload\Events\FileScanFail;
 use Ikechukwukalu\Clamavfileupload\Trait\ClamAV;
 use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload;
 
-class ClamavFileUpload extends FileUpload
+abstract class ClamavFileUpload extends FileUpload
 {
     use ClamAV;
+
+    /**
+     * Run files scan and upload.
+     *
+     * @param  array $settings
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     * @return  \Illuminate\Database\Eloquent\Collection
+     * @return  bool
+     */
+    abstract protected function runFileUpload(array $settings = []): bool|FileUploadModel|EloquentCollection;
 
     /**
      * Run files scan and upload.
@@ -21,20 +31,20 @@ class ClamavFileUpload extends FileUpload
      * @return  \Illuminate\Database\Eloquent\Collection
      * @return  bool
      */
-    public static function fileUpload(): bool|FileUploadModel|EloquentCollection
+    public function fileUpload(): bool|FileUploadModel|EloquentCollection
     {
-        if(self::$request->file()) {
-            self::storeFiles();
+        if($this->request->file()) {
+            $this->storeFiles();
 
-            if (!self::areFilesSafe()) {
-                return self::removeFiles();
+            if (!$this->areFilesSafe()) {
+                return $this->removeFiles();
             }
 
-            if (is_array(self::$request->file(self::$input))) {
-                return self::insertMultipleFiles();
+            if (is_array($this->request->file($this->input))) {
+                return $this->insertMultipleFiles();
             }
 
-            return self::insertSingleFile();
+            return $this->insertSingleFile();
         }
 
         return false;
@@ -47,22 +57,22 @@ class ClamavFileUpload extends FileUpload
      * @param $file
      * @return  array
      */
-    public static function scanFile($filePath, $file): array
+    public function scanFile($filePath, $file): array
     {
         $data = [
-            'ref' => self::$ref,
+            'ref' => $this->ref,
             'status' => false
         ];
 
-        if (self::ping()) {
-            $data['status'] = self::scan($filePath);
+        if ($this->ping()) {
+            $data['status'] = $this->scan($filePath);
         }
 
         $data['message'] = str_replace($filePath,
                             $file->getClientOriginalName(),
-                            self::getMessage());
+                            $this->getMessage());
 
-        if (self::getMessage() == 'OK') {
+        if ($this->getMessage() == 'OK') {
             $data['errorFile'] = null;
             $data['error'] = null;
 
@@ -70,7 +80,8 @@ class ClamavFileUpload extends FileUpload
         }
 
         $data['errorFile'] = $file;
-        $data['error'] = self::getMessage();
+        $data['error'] = $this->getMessage();
+        $this->failedUpload($data['error']);
 
         return $data;
     }
@@ -80,13 +91,13 @@ class ClamavFileUpload extends FileUpload
      *
      * @return  bool
      */
-    private static function areFilesSafe(): bool
+    private function areFilesSafe(): bool
     {
-        if (!is_array(self::$request->file(self::$input))) {
-            return self::isSingleFileSafe();
+        if (is_array($this->request->file($this->input))) {
+            return $this->areMultipleFilesSafe();
         }
 
-        return self::areMultipleFilesSafe();
+        return $this->isSingleFileSafe();
     }
 
     /**
@@ -94,28 +105,26 @@ class ClamavFileUpload extends FileUpload
      *
      * @return  bool
      */
-    private static function isSingleFileSafe(): bool
+    private function isSingleFileSafe(): bool
     {
-        [$fileName, $relativeFilePath] = self::fileNameAndPath();
-        $storageDisk = self::storageDisk();
+        [$fileName, $relativeFilePath] = $this->fileNameAndPath();
+        $storageDisk = $this->storageDisk();
 
-        if (self::getDisk() !== 'public'
-            && self::getDisk() !== 'local'
-        ) {
+        if (in_array($this->getDisk(), config('clamavfileupload.s3_disk'))) {
             [$storageDisk, $relativeFilePath] =
-                self::getTempDiskAndPath();
+                $this->getTempDiskAndPath();
         }
 
-        self::$scanData = self::scanFile($storageDisk->path($relativeFilePath),
-                                self::$request->file(self::$input));
+        $this->scanData = $this->scanFile($storageDisk->path($relativeFilePath),
+                                $this->request->file($this->input));
 
-        if (self::$scanData['status']) {
-            FileScanPass::dispatch(self::$scanData);
+        if ($this->scanData['status']) {
+            FileScanPass::dispatch($this->scanData);
             return true;
         }
 
-        self::logScanData(self::$scanData['error']);
-        FileScanFail::dispatch(self::$scanData);
+        $this->logScanData($this->scanData['error']);
+        FileScanFail::dispatch($this->scanData);
 
         return false;
     }
@@ -125,27 +134,26 @@ class ClamavFileUpload extends FileUpload
      *
      * @return  bool
      */
-    private static function areMultipleFilesSafe(): bool
+    private function areMultipleFilesSafe(): bool
     {
         $i = 1;
-        $storageDisk = self::storageDisk();
+        $storageDisk = $this->storageDisk();
 
-        foreach (self::$request->file(self::$input) as $file) {
-            [$fileName, $relativeFilePath] = self::fileNameAndPath($file, $i);
+        foreach ($this->request->file($this->input) as $file) {
+            [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
 
-            if (self::getDisk() !== 'public'
-                && self::getDisk() !== 'local'
+            if (in_array($this->getDisk(), config('clamavfileupload.s3_disk'))
             ) {
                 [$storageDisk, $relativeFilePath] =
-                    self::getTempDiskAndPath($file);
+                    $this->getTempDiskAndPath($file);
             }
 
-            self::$scanData = self::scanFile($storageDisk->path($relativeFilePath),
+            $this->scanData = $this->scanFile($storageDisk->path($relativeFilePath),
                                 $file);
 
-            if (!self::$scanData['status']) {
-                self::logScanData(self::$scanData['error']);
-                FileScanFail::dispatch(self::$scanData);
+            if (!$this->scanData['status']) {
+                $this->logScanData($this->scanData['error']);
+                FileScanFail::dispatch($this->scanData);
 
                 return false;
             }
@@ -153,14 +161,14 @@ class ClamavFileUpload extends FileUpload
             $i ++;
         }
 
-        FileScanPass::dispatch(self::$scanData);
+        FileScanPass::dispatch($this->scanData);
         return true;
     }
 
-    private static function getTempDiskAndPath(mixed $file = null): array
+    private function getTempDiskAndPath(mixed $file = null): array
     {
         if (!$file) {
-            $file = self::$request->file(self::$input);
+            $file = $this->request->file($this->input);
         }
 
         $storageDisk = Storage::disk('local');

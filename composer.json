@@ -6,13 +6,18 @@
     "autoload": {
         "psr-4": {
             "Ikechukwukalu\\Clamavfileupload\\": "src/",
-            "Ikechukwukalu\\Clamavfileupload\\Models\\": "src/Models/",
-            "Ikechukwukalu\\Clamavfileupload\\Foundation\\": "src/Foundation/",
-            "Ikechukwukalu\\Clamavfileupload\\Trait\\": "src/Trait/",
-            "Ikechukwukalu\\Clamavfileupload\\Support\\": "src/Support/",
-            "Ikechukwukalu\\Clamavfileupload\\Facade\\": "src/Facade/",
+            "Ikechukwukalu\\Clamavfileupload\\Contracts\\": "src/Contracts/",
             "Ikechukwukalu\\Clamavfileupload\\Events\\": "src/Events/",
-            "Ikechukwukalu\\Clamavfileupload\\Listeners\\": "src/Listeners/"
+            "Ikechukwukalu\\Clamavfileupload\\Facades\\": "src/Facades/",
+            "Ikechukwukalu\\Clamavfileupload\\Facades\\Foundation\\": "src/Facades/Foundation/",
+            "Ikechukwukalu\\Clamavfileupload\\Facades\\Services\\": "src/Facades/Services/",
+            "Ikechukwukalu\\Clamavfileupload\\Facades\\Support\\": "src/Facades/Support/",
+            "Ikechukwukalu\\Clamavfileupload\\Foundation\\": "src/Foundation/",
+            "Ikechukwukalu\\Clamavfileupload\\Listeners\\": "src/Listeners/",
+            "Ikechukwukalu\\Clamavfileupload\\Models\\": "src/Models/",
+            "Ikechukwukalu\\Clamavfileupload\\Services\\": "src/Services/",
+            "Ikechukwukalu\\Clamavfileupload\\Support\\": "src/Support/",
+            "Ikechukwukalu\\Clamavfileupload\\Trait\\": "src/Trait/"
         }
     },
     "autoload-dev": {
@@ -32,9 +37,16 @@
     ],
     "minimum-stability": "dev",
     "require": {
+        "doctrine/dbal": "^3.6",
+        "illuminate/broadcasting": "^9.0|^10.0",
+        "illuminate/contracts": "^9.0|^10.0",
+        "illuminate/database": "^9.0|^10.0",
+        "illuminate/events": "^9.0|^10.0",
+        "illuminate/http": "^9.0|^10.0",
+        "illuminate/queue": "^9.0|^10.0",
+        "illuminate/support": "^9.0|^10.0",
         "php": ">=8.0",
-        "laravel/framework": "^9.0|^10.0",
-        "doctrine/dbal": "^3.6"
+        "symfony/http-foundation": "^6.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.4",

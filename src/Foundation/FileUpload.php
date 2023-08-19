@@ -4,8 +4,8 @@ namespace Ikechukwukalu\Clamavfileupload\Foundation;
 
 use Ikechukwukalu\Clamavfileupload\Events\SavedFilesIntoDB;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
@@ -14,24 +14,28 @@ use Illuminate\Support\Facades\Storage;
 
 class FileUpload
 {
-    public static Request $request;
-    public static ?string $name;
-    public static string $fileName;
-    public static string $input;
-    public static string $ref;
-    public static ?string $folder;
-    public static string $uploadPath;
-    public static bool $hashed;
-    public static bool $visible;
-    public static array $scanData;
+    public Request $request;
+    public null|string $ref;
+
+    protected array $scanData;
+    protected bool $hashed;
+    protected bool $visible;
+    protected bool $success;
+    protected null|string $name = null;
+    protected null|string $errorMessage = null;
+    protected null|string $folder = null;
+    protected string $disk;
+    protected string $fileName;
+    protected string $input;
+    protected string $uploadPath;
 
     /**
      * Log scan data.
      *
      * @param  string  $message
-     * @return  bool
+     * @return  void
      */
-    public static function logScanData(string $message): void
+    public function logScanData(string $message): void
     {
         if (config('clamavfileupload.log_scan_data')) {
             Log::alert($message);
@@ -39,14 +43,105 @@ class FileUpload
     }
 
     /**
+     * Customise file upload settings.
+     *
+     * @param  array  $settings
+     * @return  void
+     */
+    public function customFileUploadSettings(array $settings = []): void
+    {
+        $whiteList = ['name', 'input', 'folder',
+            'uploadPath', 'hashed', 'visible', 'disk'];
+
+        foreach ($settings as $key => $setting) {
+            if (in_array($key, $whiteList)) {
+                $this->{$key} = $setting;
+            }
+        }
+
+        foreach ($this->defaultFileUploadSettings() as $key => $setting) {
+            if (!array_key_exists($key, $settings)) {
+                $this->{$key} = $setting;
+            }
+        }
+
+        if ($this->folder) {
+            $this->uploadPath .= ("/" . $this->folder);
+        }
+    }
+
+    /**
+     * Set fixed file upload settings.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  null|string  $ref
+     * @return  void
+     */
+    public function fileUploadSettings(Request $request, string $ref = null): void
+    {
+        $this->request = $request;
+        $this->ref = $ref ?? $this->setRef();
+    }
+
+    /**
+     * Get ref.
+     *
+     * @return  string
+     */
+    public function getRef(): string
+    {
+        return $this->ref;
+    }
+
+    /**
+     * Get scan data.
+     *
+     * @return  string
+     */
+    public function getScanData(): array
+    {
+        return $this->scanData;
+    }
+
+    /**
+     * Get input.
+     *
+     * @return  string
+     */
+    public function getInput(): string
+    {
+        return $this->input;
+    }
+
+    /**
+     * Check if file upload was successful.
+     *
+     * @return  bool
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->success;
+    }
+
+    /**
+     * Get error message.
+     *
+     * @return  null|string
+     */
+    public function getErrorMessage(): null|string
+    {
+        return $this->errorMessage;
+    }
+
+    /**
      * Provide \Illuminate\Support\Facades\Storage::build.
      *
      * @return  \Illuminate\Contracts\Filesystem\Filesystem
      */
-    protected static function provideDisk(): Filesystem
+    protected function provideDisk(): Filesystem
     {
-        self::storageDisk()->makeDirectory(self::$uploadPath);
-        return self::storageDisk();
+        $this->storageDisk()->makeDirectory($this->uploadPath);
+        return $this->storageDisk();
     }
 
     /**
@@ -55,36 +150,36 @@ class FileUpload
      * @return  bool
      * @return  array
      */
-    protected static function storeFiles(): bool|array
+    protected function storeFiles(): bool|array
     {
-        self::$fileName = self::setFileName();
+        $this->fileName = $this->setFileName();
 
-        if (is_array(self::$request->file(self::$input))) {
-            return self::saveMultipleFiles();
+        if (is_array($this->request->file($this->input))) {
+            return $this->saveMultipleFiles();
         }
 
-        return self::saveSingleFile();
+        return $this->saveSingleFile();
     }
 
     /**
      * Save multiple files.
      *
-     * @param ?string $fileName
+     * @param null|string $fileName
      * @return  bool
      * @return  array
      */
-    protected static function saveMultipleFiles(?string $fileName = null): bool|array
+    protected function saveMultipleFiles(null|string $fileName = null): bool|array
     {
-        $disk = self::provideDisk();
+        $disk = $this->provideDisk();
 
         $i = 1;
-        foreach (self::$request->file(self::$input) as $file) {
-            $fileName = self::$fileName . "_{$i}" . self::getExtension($file);
+        foreach ($this->request->file($this->input) as $file) {
+            $fileName = $this->fileName . "_{$i}" . $this->getExtension($file);
 
-            if (self::$visible) {
-                $disk->putFileAs(self::$uploadPath, $file, $fileName, 'public');
+            if ($this->visible) {
+                $disk->putFileAs($this->uploadPath, $file, $fileName, 'public');
             } else {
-                $disk->putFileAs(self::$uploadPath, $file, $fileName);
+                $disk->putFileAs($this->uploadPath, $file, $fileName);
             }
 
             $i ++;
@@ -96,20 +191,20 @@ class FileUpload
     /**
      * Save single file.
      *
-     * @param ?string $fileName
+     * @param null|string $fileName
      * @return  bool
      * @return  array
      */
-    protected static function saveSingleFile(?string $fileName = null): bool|array
+    protected function saveSingleFile(null|string $fileName = null): bool|array
     {
-        $fileName = self::$fileName . self::getExtension();
+        $fileName = $this->fileName . $this->getExtension();
 
-        if (self::$visible) {
-            self::provideDisk()->putFileAs(self::$uploadPath,
-                    self::$request->file(self::$input), $fileName, 'public');
+        if ($this->visible) {
+            $this->provideDisk()->putFileAs($this->uploadPath,
+                    $this->request->file($this->input), $fileName, 'public');
         } else {
-            self::provideDisk()->putFileAs(self::$uploadPath,
-                    self::$request->file(self::$input), $fileName);
+            $this->provideDisk()->putFileAs($this->uploadPath,
+                    $this->request->file($this->input), $fileName);
         }
 
         return true;
@@ -119,15 +214,15 @@ class FileUpload
      * Remove single or multiple files.
      *
      * @param array $files
-     * @return  ?bool
+     * @return  bool
      */
-    protected static function removeFiles(array $files = []): ?bool
+    protected function removeFiles(array $files = []): bool
     {
-        if (is_array(self::$request->file(self::$input))) {
-            return self::deleteMultipleFiles();
+        if (is_array($this->request->file($this->input))) {
+            return $this->deleteMultipleFiles();
         }
 
-        return self::deleteSingleFile();
+        return $this->deleteSingleFile();
     }
 
     /**
@@ -135,15 +230,13 @@ class FileUpload
      *
      * @return  bool
      */
-    protected static function deleteMultipleFiles(): bool
+    protected function deleteMultipleFiles(): bool
     {
         $i = 1;
-        foreach (self::$request->file(self::$input) as $file) {
-            [$fileName, $relativeFilePath] = self::fileNameAndPath($file, $i);
+        foreach ($this->request->file($this->input) as $file) {
+            [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
 
-            $file = str_replace(self::storageDisk()
-                        ->path(self::$uploadPath), '', $file);
-            self::storageDisk()->delete(self::$uploadPath . $file);
+            $this->storageDisk()->delete($relativeFilePath);
 
             $i ++;
         }
@@ -156,13 +249,11 @@ class FileUpload
      *
      * @return  bool
      */
-    protected static function deleteSingleFile(): bool
+    protected function deleteSingleFile(): bool
     {
-        [$fileName, $relativeFilePath] = self::fileNameAndPath();
+        [$fileName, $relativeFilePath] = $this->fileNameAndPath();
 
-        $file = str_replace(self::storageDisk()
-                ->path(self::$uploadPath), '', self::$request->file(self::$input));
-        self::storageDisk()->delete(self::$uploadPath . $file);
+        $this->storageDisk()->delete($relativeFilePath);
 
         return true;
     }
@@ -172,7 +263,7 @@ class FileUpload
      *
      * @return  string
      */
-    protected static function setRef(): string
+    protected function setRef(): string
     {
         return (string) Str::uuid();
     }
@@ -184,14 +275,14 @@ class FileUpload
      * @param $i
      * @return  string
      */
-    protected static function getName($file = null, $i = null): string
+    protected function getName($file = null, $i = null): string
     {
         if ($file && $i) {
-            return self::$name ? self::$name . "_{$i}"
+            return $this->name ? $this->name . "_{$i}"
                 : $file->getClientOriginalName();
         }
 
-        return self::$name ?? self::$request->file(self::$input)
+        return $this->name ?? $this->request->file($this->input)
                 ->getClientOriginalName();
     }
 
@@ -200,7 +291,7 @@ class FileUpload
      *
      * @return  string
      */
-    protected static function setFileName(): string
+    protected function setFileName(): string
     {
         return time() . Str::random(40);
     }
@@ -211,9 +302,9 @@ class FileUpload
      * @param $file
      * @return  string
      */
-    protected static function saveFileNameInDB($fileName): string
+    protected function saveFileNameInDB($fileName): string
     {
-        if (config('clamavfileupload.hashed', false)) {
+        if ($this->hashed) {
             return Crypt::encryptString($fileName);
         }
 
@@ -226,11 +317,11 @@ class FileUpload
      * @param $file
      * @return  string
      */
-    protected static function saveURLInDB($relativeFilePath): string
+    protected function saveURLInDB($relativeFilePath): string
     {
-        $url = Storage::url($relativeFilePath);
+        $url = $this->storageDisk()->url($relativeFilePath);
 
-        if (config('clamavfileupload.hashed', false)) {
+        if ($this->hashed) {
             return Crypt::encryptString($url);
         }
 
@@ -243,11 +334,11 @@ class FileUpload
      * @param $file
      * @return  string
      */
-    protected static function savePathInDB($relativeFilePath): string
+    protected function savePathInDB($relativeFilePath): string
     {
-        $path = self::storageDisk()->path($relativeFilePath);
+        $path = $this->storageDisk()->path($relativeFilePath);
 
-        if (config('clamavfileupload.hashed', false)) {
+        if ($this->hashed) {
             return Crypt::encryptString($path);
         }
 
@@ -260,13 +351,13 @@ class FileUpload
      * @param $file
      * @return  string
      */
-    protected static function getExtension($file = null): string
+    protected function getExtension($file = null): string
     {
         if ($file) {
             return '.' . $file->getClientOriginalExtension();
         }
 
-        return '.' . self::$request->file(self::$input)
+        return '.' . $this->request->file($this->input)
                 ->getClientOriginalExtension();
     }
 
@@ -276,9 +367,9 @@ class FileUpload
      * @param $fileName
      * @return  string
      */
-    protected static function getRelativeFilePath($fileName): string
+    protected function getRelativeFilePath($fileName): string
     {
-        return self::$uploadPath . "/" . $fileName;
+        return $this->uploadPath . "/" . $fileName;
     }
 
     /**
@@ -286,9 +377,9 @@ class FileUpload
      *
      * @return  string
      */
-    protected static function getDisk(): string
+    protected function getDisk(): string
     {
-        return config('clamavfileupload.disk');
+        return $this->disk;
     }
 
     /**
@@ -296,9 +387,9 @@ class FileUpload
      *
      * @return  \Illuminate\Contracts\Filesystem\Filesystem
      */
-    protected static function storageDisk(): Filesystem
+    protected function storageDisk(): Filesystem
     {
-        return Storage::disk(self::getDisk());
+        return Storage::disk($this->getDisk());
     }
 
     /**
@@ -308,15 +399,15 @@ class FileUpload
      * @param $i
      * @return  array
      */
-    protected static function fileNameAndPath($file = null, $i = null): array
+    protected function fileNameAndPath($file = null, $i = null): array
     {
         if ($file && $i) {
-            $fileName = self::$fileName . "_{$i}" . self::getExtension($file);
-            return [$fileName, self::getRelativeFilePath($fileName)];
+            $fileName = $this->fileName . "_{$i}" . $this->getExtension($file);
+            return [$fileName, $this->getRelativeFilePath($fileName)];
         }
 
-        $fileName = self::$fileName . self::getExtension();
-        return [$fileName, self::getRelativeFilePath($fileName)];
+        $fileName = $this->fileName . $this->getExtension();
+        return [$fileName, $this->getRelativeFilePath($fileName)];
     }
 
     /**
@@ -326,21 +417,21 @@ class FileUpload
      * @param $i
      * @return  array
      */
-    protected static function getFileModelData($file = null, $i = null): array
+    protected function getFileModelData($file = null, $i = null): array
     {
-        [$fileName, $relativeFilePath] = self::fileNameAndPath($file, $i);
+        [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
         return [
-            'ref' => self::$ref,
-            'name' => self::getName($file, $i),
-            'file_name' => self::saveFileNameInDB($fileName),
-            'url' => self::saveURLInDB($relativeFilePath),
-            'size' => self::storageDisk()->size($relativeFilePath),
-            'extension' => self::getExtension($file),
-            'disk' => self::getDisk(),
-            'mime_type' => self::storageDisk()->mimeType($relativeFilePath),
-            'path' => self::savePathInDB($relativeFilePath),
-            'folder' => self::$folder,
-            'hashed' => config('clamavfileupload.hashed', false)
+            'ref' => $this->ref,
+            'name' => $this->getName($file, $i),
+            'file_name' => $this->saveFileNameInDB($fileName),
+            'url' => $this->saveURLInDB($relativeFilePath),
+            'size' => $this->storageDisk()->size($relativeFilePath),
+            'extension' => $this->getExtension($file),
+            'disk' => $this->getDisk(),
+            'mime_type' => $this->storageDisk()->mimeType($relativeFilePath),
+            'path' => $this->savePathInDB($relativeFilePath),
+            'folder' => $this->folder,
+            'hashed' => $this->hashed
         ];
     }
 
@@ -349,24 +440,40 @@ class FileUpload
      *
      * @return  \Illuminate\Database\Eloquent\Collection
      */
-    protected static function insertMultipleFiles(): ?EloquentCollection
+    protected function insertMultipleFiles(): bool|EloquentCollection
     {
         $data = [];
         $i = 1;
 
-        foreach (self::$request->file(self::$input) as $file) {
-            $data[] = self::getFileModelData($file, $i);
+        foreach ($this->request->file($this->input) as $file) {
+            [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
+
+            if ($this->storageDisk()->missing($relativeFilePath)
+                || ($this->storageDisk()->size($relativeFilePath) < 1)
+            ) {
+                $this->removeFiles();
+                return $this->failedUpload(
+                        trans('clamavfileupload::clamav.corrupt_file',
+                        ['name' => $fileName]
+                    ));
+            }
+
+            $data[] = $this->getFileModelData($file, $i);
             $i ++;
         }
 
         if (FileUploadModel::insert($data)) {
-            $files = FileUploadModel::where('ref', self::$ref)->get();
-            SavedFilesIntoDB::dispatch($files, self::$ref);
+            $files = FileUploadModel::where('ref', $this->ref)->get();
+            SavedFilesIntoDB::dispatch($files, $this->ref);
+            $this->wasUploaded();
 
             return $files;
         }
 
-        return null;
+        return $this->failedUpload(
+                trans('clamavfileupload::clamav.database_error',
+                ['message' => 'multiple records']
+            ));
     }
 
     /**
@@ -374,14 +481,75 @@ class FileUpload
      *
      * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
      */
-    protected static function insertSingleFile(): ?FileUploadModel
+    protected function insertSingleFile(): bool|FileUploadModel
     {
-        if ($file = FileUploadModel::create(self::getFileModelData())) {
-            SavedFilesIntoDB::dispatch($file, self::$ref);
+        [$fileName, $relativeFilePath] = $this->fileNameAndPath();
+
+        if ($this->storageDisk()->missing($relativeFilePath)
+            || ($this->storageDisk()->size($relativeFilePath) < 1)
+        ) {
+            $this->removeFiles();
+            return $this->failedUpload(
+                    trans('clamavfileupload::clamav.corrupt_file',
+                    ['name' => $fileName]
+                ));
+        }
+
+        if ($file = FileUploadModel::create($this->getFileModelData())) {
+            SavedFilesIntoDB::dispatch($file, $this->ref);
+            $this->wasUploaded();
 
             return $file;
         }
 
-        return null;
+
+        return $this->failedUpload(
+            trans('clamavfileupload::clamav.database_error',
+            ['message' => 'single record']
+        ));
+    }
+
+    /**
+     * Default file upload settings.
+     *
+     * @return  array
+     */
+    protected function defaultFileUploadSettings(): array
+    {
+        return [
+            'name' => null,
+            'input' => config('clamavfileupload.input', 'file'),
+            'folder' => null,
+            'uploadPath' => config('clamavfileupload.path', 'public'),
+            'hashed' => config('clamavfileupload.hashed', false),
+            'visible' => config('clamavfileupload.visible', true),
+            'disk' => config('clamavfileupload.disk', 'local')
+        ];
+    }
+
+    /**
+     * Set that files failed to upload.
+     *
+     * @param string $message
+     * @return bool
+     */
+    protected function failedUpload(string $message): bool
+    {
+        $this->errorMessage = $message;
+        $this->success = false;
+
+        return false;
+    }
+
+    /**
+     * Set that files was uploaded.
+     *
+     * @return bool
+     */
+    protected function wasUploaded(): bool
+    {
+        $this->success = true;
+
+        return true;
     }
 }

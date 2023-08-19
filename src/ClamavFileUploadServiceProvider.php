@@ -18,17 +18,17 @@ class ClamavFileUploadServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(self::DB);
-        $this->loadTranslationsFrom(self::LANG, 'clamavfileupload');
+        $this->loadMigrationsFrom(static::DB);
+        $this->loadTranslationsFrom(static::LANG, 'clamavfileupload');
 
         $this->publishes([
-            self::CONFIG => config_path('clamavfileupload.php'),
+            static::CONFIG => config_path('clamavfileupload.php'),
         ], 'cfu-config');
         $this->publishes([
-            self::DB => database_path('migrations'),
+            static::DB => database_path('migrations'),
         ], 'cfu-migrations');
         $this->publishes([
-            self::LANG => lang_path('vendor/clamavfileupload'),
+            static::LANG => lang_path('vendor/clamavfileupload'),
         ], 'cfu-lang');
     }
 
@@ -40,9 +40,10 @@ class ClamavFileUploadServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            self::CONFIG, 'clamavfileupload'
+            static::CONFIG, 'clamavfileupload'
         );
 
         $this->app->register(EventServiceProvider::class);
+        $this->app->register(FacadeServiceProvider::class);
     }
 }

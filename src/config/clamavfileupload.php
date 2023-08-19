@@ -51,4 +51,19 @@ return [
      */
     'visible' => env('VISIBLE', true),
 
+    /**
+     * array - For s3 disks with custom names
+     */
+    's3_disk' => ['s3'],
+
+    /**
+     * array - For public disks with custom names
+     */
+    'public_disk' => ['public'],
+
+    /**
+     * array - For local disks with custom names
+     */
+    'local_disk' => ['local'],
+
 ];

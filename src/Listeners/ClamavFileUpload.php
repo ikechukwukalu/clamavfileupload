@@ -2,9 +2,9 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Listeners;
 
+use Ikechukwukalu\Clamavfileupload\Facades\Services\QueuedFileUpload;
+use Ikechukwukalu\Clamavfileupload\Facades\Support\TemporaryFileUpload;
 use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
-use Ikechukwukalu\Clamavfileupload\Facade\QueuedFileUpload;
-use Ikechukwukalu\Clamavfileupload\Support\TemporaryFileUpload;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Http\Request;
@@ -12,8 +12,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ClamavFileUpload implements ShouldQueue
 {
-    private Request $request;
     private QueuedFileUpload $fileUpload;
+    private Request $request;
 
     /**
      * Handle the event.
@@ -29,20 +29,48 @@ class ClamavFileUpload implements ShouldQueue
     /**
      * Set file request.
      *
-     * @param Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan $event
+     * @param \Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan $event
      * @return  void
      */
     private function setFileRequest(ClamavQueuedFileScan $event): void
     {
         $this->request = new Request;
+
+        if (count($event->tmpFiles) > 1) {
+            $this->request->files->set($this->fileUpload::getInput(), $this->setMultipleFiles($event->tmpFiles));
+        } else {
+            $this->request->files->set($this->fileUpload::getInput(), $this->setSingleFile($event->tmpFiles[0]));
+        }
+    }
+
+    /**
+     * Set multiple files.
+     *
+     * @param array $tmpFiles
+     * @return array
+     */
+    private function setMultipleFiles(array $tmpFiles): array
+    {
         $files = [];
 
-        foreach ($event->tmpFiles as $tmpFile) {
+        foreach ($tmpFiles as $tmpFile) {
             $extension = explode('.', $tmpFile)[1];
             $files[] = new UploadedFile($tmpFile, ".{$extension}");
         }
 
-        $this->request->files->set($this->fileUpload::$input, $files);
+        return $files;
+    }
+
+    /**
+     * Set single files.
+     *
+     * @param string $tmpFile
+     * @return UploadedFile
+     */
+    private function setSingleFile(string $tmpFile): UploadedFile
+    {
+        $extension = explode('.', $tmpFile)[1];
+        return new UploadedFile($tmpFile, ".{$extension}");
     }
 
     /**

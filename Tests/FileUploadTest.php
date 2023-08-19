@@ -7,10 +7,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
+use Ikechukwukalu\Clamavfileupload\Facades\Services\FileUpload;
+use Ikechukwukalu\Clamavfileupload\Facades\Services\NoClamavFileUpload;
+use Ikechukwukalu\Clamavfileupload\Facades\Services\QueuedFileUpload;
 use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
-use Ikechukwukalu\Clamavfileupload\Facade\FileUpload;
-use Ikechukwukalu\Clamavfileupload\Facade\NoClamavFileUpload;
-use Ikechukwukalu\Clamavfileupload\Facade\QueuedFileUpload;
 use Ikechukwukalu\Clamavfileupload\Listeners\ClamavFileUpload;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

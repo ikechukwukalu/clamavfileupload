@@ -13,8 +13,12 @@ class TemporaryFileUpload extends FileUpload
      *
      * @return  bool
      */
-    public static function fileUpload(): bool
+    public function fileUpload(): bool|array
     {
+        if($this->request->file()) {
+            return $this->storeFiles();
+        }
+
         return false;
     }
 
@@ -22,13 +26,13 @@ class TemporaryFileUpload extends FileUpload
      * Remove single or multiple files.
      *
      * @param array $files
-     * @return  ?bool
+     * @return  bool
      */
-    public static function removeFiles(array $files = []):  ?bool
+    public function removeFiles(array $files = []):  bool
     {
         foreach ($files as $file) {
-            $file = str_replace(self::storageDisk()->path('tmp'), '', $file);
-            self::storageDisk()->delete('tmp' . $file);
+            $file = str_replace($this->storageDisk()->path('tmp'), '', $file);
+            $this->storageDisk()->delete('tmp' . $file);
         }
 
         return true;
@@ -39,11 +43,11 @@ class TemporaryFileUpload extends FileUpload
      *
      * @return  \Illuminate\Contracts\Filesystem\Filesystem
      */
-    protected static function provideDisk(): Filesystem
+    protected function provideDisk(): Filesystem
     {
         return Storage::build([
             'driver' => 'local',
-            'root' => self::storageDisk()->path('tmp')
+            'root' => $this->storageDisk()->path('tmp')
         ]);
     }
 
@@ -52,7 +56,7 @@ class TemporaryFileUpload extends FileUpload
      *
      * @return  \Illuminate\Contracts\Filesystem\Filesystem
      */
-    protected static function storageDisk(): Filesystem
+    protected function storageDisk(): Filesystem
     {
         return Storage::disk('local');
     }
@@ -63,34 +67,34 @@ class TemporaryFileUpload extends FileUpload
      * @return  bool
      * @return  array
      */
-    protected static function storeFiles(): bool|array
+    protected function storeFiles(): bool|array
     {
-        self::$fileName = self::setFileName();
+        $this->fileName = $this->setFileName();
 
-        if (is_array(self::$request->file(self::$input))) {
-            return self::saveMultipleFiles(self::$fileName);
+        if (is_array($this->request->file($this->input))) {
+            return $this->saveMultipleFiles($this->fileName);
         }
 
-        return self::saveSingleFile(self::$fileName);
+        return $this->saveSingleFile($this->fileName);
     }
 
     /**
      * Save multiple files.
      *
-     * @param ?string $fileName
+     * @param null|string $fileName
      * @return  bool
      * @return  array
      */
-    protected static function saveMultipleFiles(?string $fileName = null): bool|array
+    protected function saveMultipleFiles(null|string $fileName = null): bool|array
     {
-        $disk = self::provideDisk();
+        $disk = $this->provideDisk();
         $tmpFiles = [];
         $i = 1;
 
-        foreach (self::$request->file(self::$input) as $file) {
-            $tmp = $fileName . "_{$i}" . self::getExtension($file);
+        foreach ($this->request->file($this->input) as $file) {
+            $tmp = $fileName . "_{$i}" . $this->getExtension($file);
             $disk->putFileAs("", $file, $tmp);
-            $tmpFiles[] = self::storageDisk()->path("tmp/{$tmp}");
+            $tmpFiles[] = $this->storageDisk()->path("tmp/{$tmp}");
 
             $i ++;
         }
@@ -101,18 +105,18 @@ class TemporaryFileUpload extends FileUpload
     /**
      * Save single file.
      *
-     * @param ?string $fileName
+     * @param null|string $fileName
      * @return  bool
      * @return  array
      */
-    protected static function saveSingleFile(?string $fileName = null): bool|array
+    protected function saveSingleFile(null|string $fileName = null): bool|array
     {
-        $tmp = $fileName . self::getExtension();
+        $tmp = $fileName . $this->getExtension();
 
-        self::provideDisk()->putFileAs("",
-                self::$request->file(self::$input),
-                $fileName . self::getExtension());
+        $this->provideDisk()->putFileAs("",
+                $this->request->file($this->input),
+                $fileName . $this->getExtension());
 
-        return [self::storageDisk()->path("tmp/{$tmp}")];
+        return [$this->storageDisk()->path("tmp/{$tmp}")];
     }
 }

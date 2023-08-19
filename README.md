@@ -43,7 +43,7 @@ VISIBLE=true
 ### CLAMAV SCAN FILE UPLOAD
 
 ```php
-use Ikechukwukalu\Clamavfileupload\Facade\FileUpload;
+use Ikechukwukalu\Clamavfileupload\Services\FileUpload;
 
 
 FileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollection
@@ -89,7 +89,7 @@ This process stores the file in a `tmp` directory and sets up a queue for the cl
 - `php artisan queue:work`
 
 ```php
-use Ikechukwukalu\Clamavfileupload\Facade\QueuedFileUpload;
+use Ikechukwukalu\Clamavfileupload\Services\QueuedFileUpload;
 
 
 QueuedFileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollection
@@ -126,7 +126,7 @@ QueuedFileUpload::$ref
 ### NO CLAMAV SCAN FILE UPLOAD
 
 ```php
-use Ikechukwukalu\Clamavfileupload\Facade\NoClamavFileUpload;
+use Ikechukwukalu\Clamavfileupload\Services\NoClamavFileUpload;
 
 
 NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollection
