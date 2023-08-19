@@ -37,26 +37,13 @@ class FileUpload extends ClamavFileUpload implements FileUploadInterface
      * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
      * @return  \Illuminate\Database\Eloquent\Collection
      * @return  bool
-     * @return  bool
      */
     protected function runFileUpload(array $settings = []): bool|FileUploadModel|EloquentCollection
     {
         ClamavFileScan::dispatch();
 
         if (in_array($this->getDisk(), config('clamavfileupload.s3_disks'))) {
-            $fileUpload = new TemporaryFileUpload;
-            $fileUpload::customFileUploadSettings($settings);
-            $fileUpload::fileUploadSettings($this->request);
-            $tmpFiles = $fileUpload::fileUpload();
-
-            $request = $this->setFileRequest($tmpFiles);
-            $this->customFileUploadSettings($settings);
-            $this->fileUploadSettings($request);
-            $data = $this->fileUpload();
-
-            TemporaryFileUpload::removeFiles($tmpFiles);
-
-            return $data;
+            return $this->runFileUploadForS3($settings);
         }
 
         if ($data = $this->fileUpload()) {
@@ -113,5 +100,30 @@ class FileUpload extends ClamavFileUpload implements FileUploadInterface
     {
         $extension = explode('.', $tmpFile)[1];
         return new UploadedFile($tmpFile, ".{$extension}");
+    }
+
+    /**
+     * Run file upload for s3.
+     *
+     * @param  array $settings
+     * @return  \Ikechukwukalu\Clamavfileupload\Models\FileUpload
+     * @return  \Illuminate\Database\Eloquent\Collection
+     * @return  bool
+     */
+    protected function runFileUploadForS3(array $settings = []): bool|FileUploadModel|EloquentCollection
+    {
+        $fileUpload = new TemporaryFileUpload;
+        $fileUpload::customFileUploadSettings($settings);
+        $fileUpload::fileUploadSettings($this->request);
+        $tmpFiles = $fileUpload::fileUpload();
+
+        $request = $this->setFileRequest($tmpFiles);
+        $this->customFileUploadSettings($settings);
+        $this->fileUploadSettings($request);
+        $data = $this->fileUpload();
+
+        TemporaryFileUpload::removeFiles($tmpFiles);
+
+        return $data;
     }
 }
