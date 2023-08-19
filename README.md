@@ -264,6 +264,7 @@ use Illuminate\Support\Facades\Crypt;
 - When a single file scanned fails, the process is ended and every uploaded file is removed.
 - Every batch of uploaded files has a `$ref` UUID assigned to them.
 - When using `s3` disk, files are first stored in a `tmp` directory using the `local` disk where they will be scanned before being uploaded to the `s3` bucket
+- Always add custom `s3` disks to the `s3_disk` array within the configurations file.
 - Model file `Ikechukwukalu\Clamavfileupload\Models\FileUpload`
 
 ```php

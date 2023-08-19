@@ -2,6 +2,7 @@
 
 namespace Ikechukwukalu\Clamavfileupload;
 
+use Config;
 use Ikechukwukalu\Clamavfileupload\Foundation\FileUpload as FoundationFileUpload;
 use Ikechukwukalu\Clamavfileupload\Services\FileUpload;
 use Ikechukwukalu\Clamavfileupload\Services\QueuedFileUpload;
@@ -25,6 +26,18 @@ class FacadeServiceProvider extends ServiceProvider
         $this->app->bind('FileUpload', FileUpload::class);
         $this->app->bind('QueuedFileUpload', QueuedFileUpload::class);
         $this->app->bind('NoClamavFileUpload', NoClamavFileUpload::class);
+
+        $appConfig = Config::get('app');
+        $packageFacades = [
+            'FoundationFileUpload' => \Ikechukwukalu\Clamavfileupload\Facades\Foundation\FoundationFileUpload::class,
+            'FileUpload' => \Ikechukwukalu\Clamavfileupload\Facades\Services\FileUpload::class,
+            'NoClamavFileUpload' => \Ikechukwukalu\Clamavfileupload\Facades\Services\NoClamavFileUpload::class,
+            'QueuedFileUpload' => \Ikechukwukalu\Clamavfileupload\Facades\Services\QueuedFileUpload::class,
+            'BasicFileUpload' => \Ikechukwukalu\Clamavfileupload\Facades\Support\BasicFileUpload::class,
+            'TemporaryFileUpload' => \Ikechukwukalu\Clamavfileupload\Facades\Support\TemporaryFileUpload::class,
+        ];
+        $appConfig['aliases'] = array_merge($appConfig['aliases'], $packageFacades);
+        Config::set('app', $appConfig);
     }
 
     /**
