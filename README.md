@@ -43,7 +43,7 @@ VISIBLE=true
 ### CLAMAV SCAN FILE UPLOAD
 
 ```php
-use Ikechukwukalu\Clamavfileupload\Services\FileUpload;
+use Ikechukwukalu\Clamavfileupload\Facades\Services\FileUpload;
 
 
 FileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollection
@@ -57,6 +57,7 @@ FileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollec
  * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
  * 'visible' => config('clamavfileupload.visible', true)
+ * 'disk' => config('clamavfileupload.disk', 'local')
  *
  *
  */
@@ -67,18 +68,27 @@ FileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollec
 $settings = [
     'folder' => 'pdfs'
 ];
-FileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
+
+$fileUpload = new FileUpload;
+$fileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
 
 /**
  * Access last scan results
  */
-FileUpload::$scanData
+$fileUpload::getScanData()
+
+/**
+ * Check if upload was successful
+ */
+if (!$fileUpload::isSuccessful()) {
+    echo $fileUpload::getErrorMessage();
+}
 
 /**
  * Make sure to save the $ref UUID so as to be
  * able to retrieve the uploaded file(s) from the database.
  */
-FileUpload::$ref
+$fileUpload::getRef()
 ```
 
 ### QUEUED CLAMAV SCAN FILE UPLOAD
@@ -89,7 +99,7 @@ This process stores the file in a `tmp` directory and sets up a queue for the cl
 - `php artisan queue:work`
 
 ```php
-use Ikechukwukalu\Clamavfileupload\Services\QueuedFileUpload;
+use Ikechukwukalu\Clamavfileupload\Facades\Services\QueuedFileUpload;
 
 
 QueuedFileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollection
@@ -103,6 +113,7 @@ QueuedFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloquent
  * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
  * 'visible' => config('clamavfileupload.visible', true)
+ * 'disk' => config('clamavfileupload.disk', 'local')
  *
  *
  */
@@ -114,19 +125,20 @@ $settings = [
     'folder' => 'pdfs'
 ];
 
-QueuedFileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
+$fileUpload = new QueuedFileUpload;
+$fileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
 
 /**
  * Make sure to save the $ref UUID so as to be
  * able to retrieve the uploaded file(s) from the database.
  */
-QueuedFileUpload::$ref
+$fileUpload::getRef()
 ```
 
 ### NO CLAMAV SCAN FILE UPLOAD
 
 ```php
-use Ikechukwukalu\Clamavfileupload\Services\NoClamavFileUpload;
+use Ikechukwukalu\Clamavfileupload\Facades\Services\NoClamavFileUpload;
 
 
 NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollection
@@ -140,6 +152,7 @@ NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloque
  * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
  * 'visible' => config('clamavfileupload.visible', true)
+ * 'disk' => config('clamavfileupload.disk', 'local')
  *
  *
  */
@@ -150,13 +163,22 @@ NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloque
 $settings = [
     'folder' => 'pdfs'
 ];
-NoClamavFileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
+
+$fileUpload = new QueuedFileUpload;
+$fileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|EloquentCollection
+
+/**
+ * Check if upload was successful
+ */
+if (!$fileUpload::isSuccessful()) {
+    echo $fileUpload::getErrorMessage();
+}
 
 /**
  * Make sure to save the $ref UUID so as to be
  * able to retrieve the uploaded file(s) from the database.
  */
-NoClamavFileUpload::$ref
+$fileUpload::getRef()
 ```
 
 ### HASH

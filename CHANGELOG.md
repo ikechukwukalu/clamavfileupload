@@ -1,4 +1,12 @@
-# v1.0.7
+# v1.0.8
+
+- Refactored code by removing static functions and switching to Facades.
+- Added `disk` option for custom settings
+- Added error check `isSuccessful()` and error message display `getErrorMessage()` for failed uploads
+- Added check to recognise custom `s3` disk configurations within the `s3_disks` config array
+- Switched from `$ref` and `$scanData` to `getRef()` and `getScanData()`
+
+## v1.0.7
 
 - Fixed file URL bug for s3 disk
 - Fixed file scan bug for s3 Disk

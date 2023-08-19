@@ -43,7 +43,7 @@ class FileUpload extends ClamavFileUpload implements FileUploadInterface
     {
         ClamavFileScan::dispatch();
 
-        if (in_array($this->getDisk(), config('clamavfileupload.s3_disk'))) {
+        if (in_array($this->getDisk(), config('clamavfileupload.s3_disks'))) {
             $fileUpload = new TemporaryFileUpload;
             $fileUpload::customFileUploadSettings($settings);
             $fileUpload::fileUploadSettings($this->request);

@@ -110,7 +110,7 @@ abstract class ClamavFileUpload extends FileUpload
         [$fileName, $relativeFilePath] = $this->fileNameAndPath();
         $storageDisk = $this->storageDisk();
 
-        if (in_array($this->getDisk(), config('clamavfileupload.s3_disk'))) {
+        if (in_array($this->getDisk(), config('clamavfileupload.s3_disks'))) {
             [$storageDisk, $relativeFilePath] =
                 $this->getTempDiskAndPath();
         }
@@ -142,7 +142,7 @@ abstract class ClamavFileUpload extends FileUpload
         foreach ($this->request->file($this->input) as $file) {
             [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
 
-            if (in_array($this->getDisk(), config('clamavfileupload.s3_disk'))
+            if (in_array($this->getDisk(), config('clamavfileupload.s3_disks'))
             ) {
                 [$storageDisk, $relativeFilePath] =
                     $this->getTempDiskAndPath($file);
