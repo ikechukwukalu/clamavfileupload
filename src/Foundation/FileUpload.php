@@ -182,14 +182,11 @@ class FileUpload
      */
     public function deleteAll(string $ref): bool
     {
-        $fileUploads = FileUploadModel::where('ref', $ref)->get();
-        if ($fileUploads->count() < 1) {
-            $this->failedDelete(
-                trans('clamavfileupload::clamav.files_not_found_in_db'));
+        if (!$response = $this->_deleteAll($ref)) {
             return false;
         }
 
-        $files = $fileUploads->pluck('path')->toArray();
+        [$fileUploads, $files] = $response;
 
         return $this->_softDeleteFiles($fileUploads, $files);
     }
@@ -197,22 +194,17 @@ class FileUpload
     /**
      * Soft delete multiple files from database by ref and Ids.
      *
-     * @param string $ref
      * @param array $ids
+     * @param null|string $ref
      * @return bool
      */
-    public function deleteMultiple(string $ref, array $ids): bool
+    public function deleteMultiple(array $ids, null|string $ref = null): bool
     {
-        $fileUploads = FileUploadModel::where('ref', $ref)
-            ->whereIn('id', $ids)
-            ->get();
-        if ($fileUploads->count() < 1) {
-            $this->failedDelete(
-                trans('clamavfileupload::clamav.files_not_found_in_db'));
+        if (!$response = $this->_deleteMultiple($ids, $ref)) {
             return false;
         }
 
-        $files = $fileUploads->pluck('path')->toArray();
+        [$fileUploads, $files] = $response;
 
         return $this->_softDeleteFiles($fileUploads, $files);
     }
@@ -224,18 +216,13 @@ class FileUpload
      * @param int|string $id
      * @return bool
      */
-    public function deleteOne(string $ref, int|string $id): bool
+    public function deleteOne(int|string $id, null|string $ref = null): bool
     {
-        if (!$fileUpload = FileUploadModel::where('ref', $ref)
-                ->where('id', $id)
-                ->first()
-        ) {
-            $this->failedDelete(
-                trans('clamavfileupload::clamav.files_not_found_in_db'));
+        if (!$response = $this->_deleteOne($id, $ref)) {
             return false;
         }
 
-        $files = [$fileUpload->path];
+        [$fileUpload, $files] = $response;
 
         return $this->_softDeleteFiles($fileUpload, $files);
     }
@@ -248,15 +235,11 @@ class FileUpload
      */
     public function forceDeleteAll(string $ref): bool
     {
-        $fileUploads = FileUploadModel::where('ref', $ref)->get();
-        if ($fileUploads->count() < 1) {
-            $this->failedDelete(
-                trans('clamavfileupload::clamav.files_not_found_in_db'));
+        if (!$response = $this->_deleteAll($ref)) {
             return false;
         }
 
-        $files = $this->extractPath($fileUploads);
-
+        [$fileUploads, $files] = $response;
         return $this->_forceDeleteFiles($fileUploads, $files);
     }
 
@@ -268,19 +251,13 @@ class FileUpload
      * @param array $ids
      * @return bool
      */
-    public function forceDeleteMultiple(string $ref, array $ids): bool
+    public function forceDeleteMultiple(array $ids, null|string $ref = null): bool
     {
-        $fileUploads = FileUploadModel::where('ref', $ref)
-            ->whereIn('id', $ids)
-            ->get();
-
-        if ($fileUploads->count() < 1) {
-            $this->failedDelete(
-                trans('clamavfileupload::clamav.files_not_found_in_db'));
+        if (!$response = $this->_deleteMultiple($ids, $ref)) {
             return false;
         }
 
-        $files = $this->extractPath($fileUploads);
+        [$fileUploads, $files] = $response;
 
         return $this->_forceDeleteFiles($fileUploads, $files);
     }
@@ -293,18 +270,13 @@ class FileUpload
      * @param int|string $id
      * @return bool
      */
-    public function forceDeleteOne(string $ref, int|string $id): bool
+    public function forceDeleteOne(int|string $id, null|string $ref = null): bool
     {
-        if (!$fileUpload = FileUploadModel::where('ref', $ref)
-                ->where('id', $id)
-                ->first()
-        ) {
-            $this->failedDelete(
-                trans('clamavfileupload::clamav.files_not_found_in_db'));
+        if (!$response = $this->_deleteOne($id, $ref)) {
             return false;
         }
 
-        $files = $this->extractPath($fileUpload);
+        [$fileUpload, $files] = $response;
 
         return $this->_forceDeleteFiles($fileUpload, $files);
     }
@@ -878,6 +850,78 @@ class FileUpload
 
             return $file;
         })->pluck('path')->toArray();
+    }
+
+    /**
+     * Soft delete all files from database by ref.
+     *
+     * @param string $ref
+     * @return bool
+     */
+    private function _deleteAll(string $ref): array|null
+    {
+        $fileUploads = FileUploadModel::where('ref', $ref)->get();
+
+        if ($fileUploads->count() < 1) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return null;
+        }
+
+        $files = $this->extractPath($fileUploads);
+
+        return [$fileUploads, $files];
+    }
+
+    /**
+     * Soft delete multiple files from database by ref and Ids.
+     *
+     * @param array $ids
+     * @param null|string $ref
+     * @return bool
+     */
+    private function _deleteMultiple(array $ids, null|string $ref = null): array|null
+    {
+        $query = FileUploadModel::query();
+        if ($ref) {
+            $query->where('ref', $ref);
+        }
+
+        $fileUploads = $query->whereIn('id', $ids)->get();
+        if ($fileUploads->count() < 1) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return null;
+        }
+
+        $files = $this->extractPath($fileUploads);
+
+        return [$fileUploads, $files];
+    }
+
+    /**
+     * Soft delete single file from database by ref and id.
+     *
+     * @param string $ref
+     * @param int|string $id
+     * @return bool
+     */
+    private function _deleteOne(int|string $id, null|string $ref = null): array|null
+    {
+        $query = FileUploadModel::query();
+        if ($ref) {
+            $query->where('ref', $ref);
+        }
+
+        if (!$fileUpload = $query->where('id', $id)->first()) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return null;
+        }
+
+        $files = $this->extractPath($fileUpload);
+
+        return [$fileUpload, $files];
     }
 
 }

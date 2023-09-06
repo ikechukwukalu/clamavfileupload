@@ -179,7 +179,13 @@ class FileUploadTest extends TestCase
         $response = $fileUpload::uploadFiles($request, $settings);
         $this->assertTrue($response instanceof Collection);
 
-        $fileUpload::deleteMultiple($fileUpload::getRef(), [$response[0]->id]);
+        $fileUpload::deleteMultiple([$response[0]->id], $fileUpload::getRef());
+
+        $fileUpload = new NoClamavFileUpload;
+        $response = $fileUpload::uploadFiles($request, $settings);
+        $this->assertTrue($response instanceof Collection);
+
+        $fileUpload::deleteMultiple([$response[0]->id]);
     }
 
     public function test_delete_one_for_file_uploaded_run_is_true(): void
@@ -212,7 +218,13 @@ class FileUploadTest extends TestCase
         $response = $fileUpload::uploadFiles($request, $settings);
         $this->assertTrue($response instanceof Collection);
 
-        $fileUpload::deleteOne($fileUpload::getRef(), $response[0]->id);
+        $fileUpload::deleteOne($response[0]->id, $fileUpload::getRef());
+
+        $fileUpload = new NoClamavFileUpload;
+        $response = $fileUpload::uploadFiles($request, $settings);
+        $this->assertTrue($response instanceof Collection);
+
+        $fileUpload::deleteOne($response[0]->id);
     }
 
     public function test_force_delete_all_for_file_uploaded_run_is_true(): void
@@ -278,7 +290,13 @@ class FileUploadTest extends TestCase
         $response = $fileUpload::uploadFiles($request, $settings);
         $this->assertTrue($response instanceof Collection);
 
-        $fileUpload::forceDeleteMultiple($fileUpload::getRef(), [$response[0]->id]);
+        $fileUpload::forceDeleteMultiple([$response[0]->id], $fileUpload::getRef());
+
+        $fileUpload = new NoClamavFileUpload;
+        $response = $fileUpload::uploadFiles($request, $settings);
+        $this->assertTrue($response instanceof Collection);
+
+        $fileUpload::forceDeleteMultiple([$response[0]->id]);
     }
 
     public function test_force_delete_one_for_file_uploaded_run_is_true(): void
@@ -311,7 +329,13 @@ class FileUploadTest extends TestCase
         $response = $fileUpload::uploadFiles($request, $settings);
         $this->assertTrue($response instanceof Collection);
 
-        $fileUpload::forceDeleteOne($fileUpload::getRef(), $response[0]->id);
+        $fileUpload::forceDeleteOne($response[0]->id, $fileUpload::getRef());
+
+        $fileUpload = new NoClamavFileUpload;
+        $response = $fileUpload::uploadFiles($request, $settings);
+        $this->assertTrue($response instanceof Collection);
+
+        $fileUpload::forceDeleteOne($response[0]->id);
     }
 
     public function test_get_deleted_files_is_true(): void

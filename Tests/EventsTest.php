@@ -111,14 +111,14 @@ class EventsTest extends TestCase
             FileDeleteAll::class
         );
 
-        QueuedDeleteMultiple::dispatch('abc', []);
+        QueuedDeleteMultiple::dispatch([], 'abc');
         $event->assertDispatched(QueuedDeleteMultiple::class);
         $event->assertListening(
             QueuedDeleteMultiple::class,
             FileDeleteMultiple::class
         );
 
-        QueuedDeleteOne::dispatch('abc', 1);
+        QueuedDeleteOne::dispatch(1, 'abc');
         $event->assertDispatched(QueuedDeleteOne::class);
         $event->assertListening(
             QueuedDeleteOne::class,
@@ -136,14 +136,14 @@ class EventsTest extends TestCase
             FileDeleteAll::class
         );
 
-        QueuedForceDeleteMultiple::dispatch('abc', []);
+        QueuedForceDeleteMultiple::dispatch([], 'abc');
         $event->assertDispatched(QueuedForceDeleteMultiple::class);
         $event->assertListening(
             QueuedForceDeleteMultiple::class,
             FileDeleteMultiple::class
         );
 
-        QueuedForceDeleteOne::dispatch('abc', 1);
+        QueuedForceDeleteOne::dispatch(1, 'abc');
         $event->assertDispatched(QueuedForceDeleteOne::class);
         $event->assertListening(
             QueuedForceDeleteOne::class,

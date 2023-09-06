@@ -47,6 +47,7 @@ abstract class ClamavFileUpload extends FileUpload
             return $this->insertSingleFile();
         }
 
+        $this->failedUpload(trans('clamavfileupload::clamav.empty_file_input'));
         return false;
     }
 

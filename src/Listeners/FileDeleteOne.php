@@ -14,11 +14,11 @@ class FileDeleteOne implements ShouldQueue
     public function handle(QueuedDeleteOne|QueuedForceDeleteOne $event): void
     {
         if ($event instanceof QueuedForceDeleteOne) {
-            FileUpload::forceDeleteOne($event->ref, $event->ids);
+            FileUpload::forceDeleteOne($event->ids, $event->ref);
             return;
         }
 
-        FileUpload::deleteOne($event->ref, $event->ids);
+        FileUpload::deleteOne($event->ids, $event->ref);
     }
 
 }

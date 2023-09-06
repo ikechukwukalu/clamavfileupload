@@ -1,7 +1,7 @@
-# v2.0.1
+# v2.0.2
 
-- Added new soft delete functions which are `deleteAll(string $ref)`, `deleteMultiple(string $ref, array $ids)` and `deleteOne(string $ref, int|string $id)`
-- Added new delete functions that will permanently delete files from the database and disk which are `forceDeleteAll(string $ref)`, `forceDeleteMultiple(string $ref, array $ids)` and `forceDeleteOne(string $ref, int|string $id`
+- Added new soft delete functions which are `deleteAll(string $ref)`, `deleteMultiple(array $ids, null|string $ref = null)` and `deleteOne(int|string $id, null|string $ref = null)`
+- Added new delete functions that will permanently delete files from the database and disk which are `forceDeleteAll(string $ref)`, `forceDeleteMultiple(array $ids, null|string $ref = null)` and `forceDeleteOne(string $ref, int|string $id`
 - Delete functions can also be queued by calling them from the `\Ikechukwukalu\Clamavfileupload\Facades\Services\QueuedFileUpload` facade
 - Added `getFiles(null|string $ref = null, null|string|array $id = null, bool $trashed = false)` function
 

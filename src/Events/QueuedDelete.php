@@ -14,8 +14,8 @@ class QueuedDelete
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $ref;
-    public array|int|string|null $ids;
+    public array|int|string $ids;
+    public null|string $ref;
 
     /**
      * Create a new event instance.
@@ -23,7 +23,7 @@ class QueuedDelete
      * @param  string  $ref
      * @param  array|int|string|null  $ids
      */
-    public function __construct(string $ref, array|int|string|null $ids = null)
+    public function __construct(array|int|string $ids, null|string $ref = null)
     {
         $this->ref = $ref;
         $this->ids = $ids;

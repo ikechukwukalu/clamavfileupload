@@ -30,9 +30,9 @@ trait QueuedDelete {
      * @param array $ids
      * @return bool
      */
-    public function deleteMultiple(string $ref, array $ids): bool
+    public function deleteMultiple(array $ids, null|string $ref = null): bool
     {
-        QueuedDeleteMultiple::dispatch($ref, $ids);
+        QueuedDeleteMultiple::dispatch($ids, $ref);
         return true;
     }
 
@@ -43,9 +43,9 @@ trait QueuedDelete {
      * @param int|string $id
      * @return bool
      */
-    public function deleteOne(string $ref, int|string $id): bool
+    public function deleteOne(int|string $id, null|string $ref = null): bool
     {
-        QueuedDeleteOne::dispatch($ref, $id);
+        QueuedDeleteOne::dispatch($id, $ref);
         return true;
     }
 
@@ -69,9 +69,9 @@ trait QueuedDelete {
      * @param array $ids
      * @return bool
      */
-    public function forceDeleteMultiple(string $ref, array $ids): bool
+    public function forceDeleteMultiple(array $ids, null|string $ref = null): bool
     {
-        QueuedForceDeleteMultiple::dispatch($ref, $ids);
+        QueuedForceDeleteMultiple::dispatch($ids, $ref);
         return true;
     }
 
@@ -83,9 +83,9 @@ trait QueuedDelete {
      * @param int|string $id
      * @return bool
      */
-    public function forceDeleteOne(string $ref, int|string $id): bool
+    public function forceDeleteOne(int|string $id, null|string $ref = null): bool
     {
-        QueuedForceDeleteOne::dispatch($ref, $id);
+        QueuedForceDeleteOne::dispatch($id, $ref);
         return true;
     }
 }

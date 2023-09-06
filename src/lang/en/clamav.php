@@ -9,5 +9,6 @@ return [
     'not_running' => 'Clamav is not running',
     'database_error' => 'Could not insert :message into the database',
     'files_not_found_in_db' => 'No file(s) found in database.',
+    'empty_file_input' => 'File input cannot be empty.',
 
 ];

@@ -14,11 +14,11 @@ class FileDeleteMultiple implements ShouldQueue
     public function handle(QueuedDeleteMultiple|QueuedForceDeleteMultiple $event): void
     {
         if ($event instanceof QueuedForceDeleteMultiple) {
-            FileUpload::forceDeleteMultiple($event->ref, $event->ids);
+            FileUpload::forceDeleteMultiple($event->ids, $event->ref);
             return;
         }
 
-        FileUpload::deleteMultiple($event->ref, $event->ids);
+        FileUpload::deleteMultiple($event->ids, $event->ref);
     }
 
 }
