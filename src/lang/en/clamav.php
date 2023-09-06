@@ -7,6 +7,7 @@ return [
     'unable_to_open_socket' => 'Scan failed, unable to open socket!',
     'socket_connected' => 'Connected to socket!',
     'not_running' => 'Clamav is not running',
-    'database_error' => 'Could not insert :message into the database'
+    'database_error' => 'Could not insert :message into the database',
+    'files_not_found_in_db' => 'No file(s) found in database.',
 
 ];

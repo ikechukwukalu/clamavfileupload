@@ -7,11 +7,14 @@ use Ikechukwukalu\Clamavfileupload\Facades\Support\TemporaryFileUpload;
 use Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Ikechukwukalu\Clamavfileupload\Support\ClamavFileUpload;
+use Ikechukwukalu\Clamavfileupload\Trait\QueuedDelete;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 
 class QueuedFileUpload extends ClamavFileUpload implements FileUploadInterface
 {
+    use QueuedDelete;
+
     /**
      * Upload single or multiple files.
      *
@@ -47,5 +50,6 @@ class QueuedFileUpload extends ClamavFileUpload implements FileUploadInterface
         ClamavQueuedFileScan::dispatch($tmpFiles, $settings, $this->ref);
         return true;
     }
+
 
 }

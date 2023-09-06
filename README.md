@@ -89,6 +89,55 @@ if (!$fileUpload::isSuccessful()) {
  * able to retrieve the uploaded file(s) from the database.
  */
 $fileUpload::getRef()
+
+/**
+ * Soft delete files
+ */
+
+/**
+ * @param string $ref
+ * @return bool
+ */
+FileUpload::deleteAll($ref);
+
+/**
+ * @param string $ref
+ * @param array $ids
+ * @return bool
+ */
+FileUpload::deleteMultiple($ref, $ids);
+
+/**
+ * @param string $ref
+ * @param int $id
+ * @return bool
+ */
+FileUpload::deleteOne($ref, $id);
+
+
+/**
+ * Permanently delete files from the database and disk
+ */
+
+/**
+ * @param string $ref
+ * @return bool
+ */
+FileUpload::forceDeleteAll($ref);
+
+/**
+ * @param string $ref
+ * @param array $ids
+ * @return bool
+ */
+FileUpload::forceDeleteMultiple($ref, $ids);
+
+/**
+ * @param string $ref
+ * @param int $id
+ * @return bool
+ */
+FileUpload::forceDeleteOne($ref, $id);
 ```
 
 ### QUEUED CLAMAV SCAN FILE UPLOAD
@@ -133,6 +182,55 @@ $fileUpload::uploadFiles($request, $settings); //returns bool|FileUploadModel|El
  * able to retrieve the uploaded file(s) from the database.
  */
 $fileUpload::getRef()
+
+/**
+ * Soft delete files
+ */
+
+/**
+ * @param string $ref
+ * @return bool
+ */
+QueuedFileUpload::deleteAll($ref);
+
+/**
+ * @param string $ref
+ * @param array $ids
+ * @return bool
+ */
+QueuedFileUpload::deleteMultiple($ref, $ids);
+
+/**
+ * @param string $ref
+ * @param int $id
+ * @return bool
+ */
+QueuedFileUpload::deleteOne($ref, $id);
+
+
+/**
+ * Permanently delete files from the database and disk
+ */
+
+/**
+ * @param string $ref
+ * @return bool
+ */
+QueuedFileUpload::forceDeleteAll($ref);
+
+/**
+ * @param string $ref
+ * @param array $ids
+ * @return bool
+ */
+QueuedFileUpload::forceDeleteMultiple($ref, $ids);
+
+/**
+ * @param string $ref
+ * @param int $id
+ * @return bool
+ */
+QueuedFileUpload::forceDeleteOne($ref, $id);
 ```
 
 ### NO CLAMAV SCAN FILE UPLOAD
@@ -179,6 +277,55 @@ if (!$fileUpload::isSuccessful()) {
  * able to retrieve the uploaded file(s) from the database.
  */
 $fileUpload::getRef()
+
+/**
+ * Soft delete files
+ */
+
+/**
+ * @param string $ref
+ * @return bool
+ */
+NoClamavFileUpload::deleteAll($ref);
+
+/**
+ * @param string $ref
+ * @param array $ids
+ * @return bool
+ */
+NoClamavFileUpload::deleteMultiple($ref, $ids);
+
+/**
+ * @param string $ref
+ * @param int $id
+ * @return bool
+ */
+NoClamavFileUpload::deleteOne($ref, $id);
+
+
+/**
+ * Permanently delete files from the database and disk
+ */
+
+/**
+ * @param string $ref
+ * @return bool
+ */
+NoClamavFileUpload::forceDeleteAll($ref);
+
+/**
+ * @param string $ref
+ * @param array $ids
+ * @return bool
+ */
+NoClamavFileUpload::forceDeleteMultiple($ref, $ids);
+
+/**
+ * @param string $ref
+ * @param int $id
+ * @return bool
+ */
+NoClamavFileUpload::forceDeleteOne($ref, $id);
 ```
 
 ### HASH
@@ -245,7 +392,7 @@ use Illuminate\Support\Facades\Crypt;
 \Ikechukwukalu\Clamavfileupload\Events\FileScanFail::class
 
 /**
- * Dispatches when files have been saved into the Database.
+ * Dispatches when files have been stored and saved into the Database.
  *
  * @param  FileUploadModel|EloquentCollection $files
  * @param  string  $ref
@@ -257,6 +404,80 @@ use Illuminate\Support\Facades\Crypt;
  *
  */
 \Ikechukwukalu\Clamavfileupload\Events\ClamavIsNotRunning::class
+
+/**
+ * Dispatches when file soft delete fails.
+ *
+ * @param  array  $data
+ */
+\Ikechukwukalu\Clamavfileupload\Events\FileDeleteFail::class
+
+/**
+ * Dispatches when file soft delete passes.
+ *
+ * @param  array  $data
+ */
+\Ikechukwukalu\Clamavfileupload\Events\FileDeletePass::class
+
+/**
+ * Dispatches when permanent file delete from database and disk fails.
+ *
+ * @param  array  $data
+ */
+\Ikechukwukalu\Clamavfileupload\Events\FileForceDeleteFail::class
+
+/**
+ * Dispatches when permanent file delete from database and disk passes.
+ *
+ * @param  array  $data
+ */
+\Ikechukwukalu\Clamavfileupload\Events\FileForceDeletePass::class
+
+/**
+ * Dispatches when a QueuedFileUpload::deleteAll($ref) is called.
+ *
+ * @param  string  $ref
+ */
+\Ikechukwukalu\Clamavfileupload\Events\QueuedDeleteAll::class
+
+/**
+ * Dispatches when a QueuedFileUpload::deleteMultiple($ref, $ids) is called.
+ *
+ * @param  string  $ref
+ * @param  array  $ids
+ */
+\Ikechukwukalu\Clamavfileupload\Events\QueuedDeleteMultiple::class
+
+/**
+ * Dispatches when a QueuedFileUpload::deleteOne($ref, $id) is called.
+ *
+ * @param  string  $ref
+ * @param  int|string  $id
+ */
+\Ikechukwukalu\Clamavfileupload\Events\QueuedDeleteOne::class
+
+/**
+ * Dispatches when a QueuedFileUpload::forceDeleteAll($ref) is called.
+ *
+ * @param  string  $ref
+ */
+\Ikechukwukalu\Clamavfileupload\Events\QueuedForceDeleteAll::class
+
+/**
+ * Dispatches when a QueuedFileUpload::forceDeleteMultiple($ref, $ids) is called.
+ *
+ * @param  string  $ref
+ * @param  array  $ids
+ */
+\Ikechukwukalu\Clamavfileupload\Events\QueuedForceDeleteMultiple::class
+
+/**
+ * Dispatches when a QueuedFileUpload::forceDeleteOne($ref, $id) is called.
+ *
+ * @param  string  $ref
+ * @param  int|string  $id
+ */
+\Ikechukwukalu\Clamavfileupload\Events\QueuedForceDeleteOne::class
 ```
 
 ### NOTE

@@ -2,6 +2,10 @@
 
 namespace Ikechukwukalu\Clamavfileupload\Foundation;
 
+use Ikechukwukalu\Clamavfileupload\Events\FileDeleteFail;
+use Ikechukwukalu\Clamavfileupload\Events\FileDeletePass;
+use Ikechukwukalu\Clamavfileupload\Events\FileForceDeleteFail;
+use Ikechukwukalu\Clamavfileupload\Events\FileForceDeletePass;
 use Ikechukwukalu\Clamavfileupload\Events\SavedFilesIntoDB;
 use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -134,6 +138,178 @@ class FileUpload
     }
 
     /**
+     * Get files.
+     *
+     * @param null|string $ref = null
+     * @param null|string|array $id = null
+     * @param bool $trashed = false
+     * @return  FileUploadModel|EloquentCollection
+     */
+    public function getFiles(null|string $ref = null, null|string|array $id = null, bool $trashed = false): FileUploadModel|EloquentCollection
+    {
+        if (
+            !($trashed || isset($ref) || isset($id))
+        ) {
+            return FileUploadModel::all();
+        }
+
+
+        $fileUpload = FileUploadModel::query();
+        if ($trashed) {
+            $fileUpload = FileUploadModel::withTrashed(true);
+        }
+
+        if (is_string($ref)) {
+            $fileUpload->where('ref', $ref);
+        }
+
+        if (is_array($id)) {
+            $fileUpload->whereIn('id', $id);
+        } elseif (isset($id)) {
+            $fileUpload->where('id', $id);
+            return $fileUpload->first();
+        }
+
+
+        return $fileUpload->get();
+    }
+
+    /**
+     * Soft delete all files from database by ref.
+     *
+     * @param string $ref
+     * @return bool
+     */
+    public function deleteAll(string $ref): bool
+    {
+        $fileUploads = FileUploadModel::where('ref', $ref)->get();
+        if ($fileUploads->count() < 1) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return false;
+        }
+
+        $files = $fileUploads->pluck('path')->toArray();
+
+        return $this->_softDeleteFiles($fileUploads, $files);
+    }
+
+    /**
+     * Soft delete multiple files from database by ref and Ids.
+     *
+     * @param string $ref
+     * @param array $ids
+     * @return bool
+     */
+    public function deleteMultiple(string $ref, array $ids): bool
+    {
+        $fileUploads = FileUploadModel::where('ref', $ref)
+            ->whereIn('id', $ids)
+            ->get();
+        if ($fileUploads->count() < 1) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return false;
+        }
+
+        $files = $fileUploads->pluck('path')->toArray();
+
+        return $this->_softDeleteFiles($fileUploads, $files);
+    }
+
+    /**
+     * Soft delete single file from database by ref and id.
+     *
+     * @param string $ref
+     * @param int|string $id
+     * @return bool
+     */
+    public function deleteOne(string $ref, int|string $id): bool
+    {
+        if (!$fileUpload = FileUploadModel::where('ref', $ref)
+                ->where('id', $id)
+                ->first()
+        ) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return false;
+        }
+
+        $files = [$fileUpload->path];
+
+        return $this->_softDeleteFiles($fileUpload, $files);
+    }
+
+    /**
+     * Permanently delete all files from directory and database by ref.
+     *
+     * @param string $ref
+     * @return bool
+     */
+    public function forceDeleteAll(string $ref): bool
+    {
+        $fileUploads = FileUploadModel::where('ref', $ref)->get();
+        if ($fileUploads->count() < 1) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return false;
+        }
+
+        $files = $this->extractPath($fileUploads);
+
+        return $this->_forceDeleteFiles($fileUploads, $files);
+    }
+
+    /**
+     * Permanently delete multiple files from directory
+     * and database by ref and Ids.
+     *
+     * @param string $ref
+     * @param array $ids
+     * @return bool
+     */
+    public function forceDeleteMultiple(string $ref, array $ids): bool
+    {
+        $fileUploads = FileUploadModel::where('ref', $ref)
+            ->whereIn('id', $ids)
+            ->get();
+
+        if ($fileUploads->count() < 1) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return false;
+        }
+
+        $files = $this->extractPath($fileUploads);
+
+        return $this->_forceDeleteFiles($fileUploads, $files);
+    }
+
+    /**
+     * Permanently delete single file from directory
+     * and database by ref and id.
+     *
+     * @param string $ref
+     * @param int|string $id
+     * @return bool
+     */
+    public function forceDeleteOne(string $ref, int|string $id): bool
+    {
+        if (!$fileUpload = FileUploadModel::where('ref', $ref)
+                ->where('id', $id)
+                ->first()
+        ) {
+            $this->failedDelete(
+                trans('clamavfileupload::clamav.files_not_found_in_db'));
+            return false;
+        }
+
+        $files = $this->extractPath($fileUpload);
+
+        return $this->_forceDeleteFiles($fileUpload, $files);
+    }
+
+    /**
      * Provide \Illuminate\Support\Facades\Storage::build.
      *
      * @return  \Illuminate\Contracts\Filesystem\Filesystem
@@ -170,22 +346,27 @@ class FileUpload
      */
     protected function saveMultipleFiles(null|string $fileName = null): bool|array
     {
-        $disk = $this->provideDisk();
+        return $this->tryCatch(function() use($fileName) {
+            $disk = $this->provideDisk();
 
-        $i = 1;
-        foreach ($this->request->file($this->input) as $file) {
-            $fileName = $this->fileName . "_{$i}" . $this->getExtension($file);
+            $i = 1;
+            foreach ($this->request->file($this->input) as $file) {
+                $fileName = $this->fileName . "_{$i}" . $this->getExtension($file);
 
-            if ($this->visible) {
-                $disk->putFileAs($this->uploadPath, $file, $fileName, 'public');
-            } else {
-                $disk->putFileAs($this->uploadPath, $file, $fileName);
+                if ($this->visible) {
+                    $disk->putFileAs($this->uploadPath, $file, $fileName, 'public');
+                } else {
+                    $disk->putFileAs($this->uploadPath, $file, $fileName);
+                }
+
+                $i ++;
             }
 
-            $i ++;
-        }
+            return true;
 
-        return true;
+        }, function() {
+            return false;
+        });
     }
 
     /**
@@ -197,17 +378,22 @@ class FileUpload
      */
     protected function saveSingleFile(null|string $fileName = null): bool|array
     {
-        $fileName = $this->fileName . $this->getExtension();
+        return $this->tryCatch(function() use($fileName) {
+            $fileName = $this->fileName . $this->getExtension();
 
-        if ($this->visible) {
-            $this->provideDisk()->putFileAs($this->uploadPath,
-                    $this->request->file($this->input), $fileName, 'public');
-        } else {
-            $this->provideDisk()->putFileAs($this->uploadPath,
-                    $this->request->file($this->input), $fileName);
-        }
+            if ($this->visible) {
+                $this->provideDisk()->putFileAs($this->uploadPath,
+                        $this->request->file($this->input), $fileName, 'public');
+            } else {
+                $this->provideDisk()->putFileAs($this->uploadPath,
+                        $this->request->file($this->input), $fileName);
+            }
 
-        return true;
+            return true;
+
+        }, function() {
+            return false;
+        });
     }
 
     /**
@@ -216,8 +402,12 @@ class FileUpload
      * @param array $files
      * @return  bool
      */
-    protected function removeFiles(array $files = []): bool
+    protected function removeFiles(array $files = [], null|string $disk = null): bool
     {
+        if ($files !== []) {
+            return $this->deleteMultipleFiles($files, $disk);
+        }
+
         if (is_array($this->request->file($this->input))) {
             return $this->deleteMultipleFiles();
         }
@@ -230,18 +420,36 @@ class FileUpload
      *
      * @return  bool
      */
-    protected function deleteMultipleFiles(): bool
+    protected function deleteMultipleFiles(array $files = [], null|string $disk = null): bool
     {
-        $i = 1;
-        foreach ($this->request->file($this->input) as $file) {
-            [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
+        if ($files !== []) {
+            return $this->tryCatch(function() use($files, $disk) {
+                foreach ($files as $file) {
+                    Storage::disk($disk)->delete($file);
+                }
 
-            $this->storageDisk()->delete($relativeFilePath);
+                return true;
 
-            $i ++;
+            }, function() {
+                return false;
+            });
         }
 
-        return true;
+        return $this->tryCatch(function() {
+            $i = 1;
+            foreach ($this->request->file($this->input) as $file) {
+                [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
+
+                $this->storageDisk()->delete($relativeFilePath);
+
+                $i ++;
+            }
+
+            return true;
+
+        }, function() {
+            return false;
+        });
     }
 
     /**
@@ -251,11 +459,16 @@ class FileUpload
      */
     protected function deleteSingleFile(): bool
     {
-        [$fileName, $relativeFilePath] = $this->fileNameAndPath();
+        return $this->tryCatch(function() {
+            [$fileName, $relativeFilePath] = $this->fileNameAndPath();
 
-        $this->storageDisk()->delete($relativeFilePath);
+            $this->storageDisk()->delete($relativeFilePath);
 
-        return true;
+            return true;
+
+        }, function() {
+            return false;
+        });
     }
 
     /**
@@ -462,18 +675,21 @@ class FileUpload
             $i ++;
         }
 
-        if (FileUploadModel::insert($data)) {
+        return $this->tryCatch(function() use($data) {
+            FileUploadModel::insert($data);
             $files = FileUploadModel::where('ref', $this->ref)->get();
             SavedFilesIntoDB::dispatch($files, $this->ref);
             $this->wasUploaded();
 
             return $files;
-        }
 
-        return $this->failedUpload(
-                trans('clamavfileupload::clamav.database_error',
-                ['message' => 'multiple records']
+        }, function() {
+            return $this->failedUpload(
+                    trans('clamavfileupload::clamav.database_error',
+                    ['message' => 'multiple records']
             ));
+        });
+
     }
 
     /**
@@ -495,18 +711,19 @@ class FileUpload
                 ));
         }
 
-        if ($file = FileUploadModel::create($this->getFileModelData())) {
+        return $this->tryCatch(function() {
+            $file = FileUploadModel::create($this->getFileModelData());
             SavedFilesIntoDB::dispatch($file, $this->ref);
             $this->wasUploaded();
 
             return $file;
-        }
 
-
-        return $this->failedUpload(
-            trans('clamavfileupload::clamav.database_error',
-            ['message' => 'single record']
-        ));
+        }, function() {
+            return $this->failedUpload(
+                trans('clamavfileupload::clamav.database_error',
+                ['message' => 'single record']
+            ));
+        });
     }
 
     /**
@@ -542,6 +759,17 @@ class FileUpload
     }
 
     /**
+     * Set that files failed to delete.
+     *
+     * @param string $message
+     * @return bool
+     */
+    protected function failedDelete(string $message): bool
+    {
+        return $this->failedUpload($message);
+    }
+
+    /**
      * Set that files was uploaded.
      *
      * @return bool
@@ -552,4 +780,104 @@ class FileUpload
 
         return true;
     }
+
+    /**
+     * Try catch block.
+     *
+     * @param callable $tryFunc
+     * @param callable $catchFunc
+     * @return mixed
+     */
+    protected function tryCatch(callable $tryFunc, callable $catchFunc): mixed
+    {
+        try {
+            return $tryFunc();
+        } catch (\Throwable $th) {
+            $this->failedUpload($th->getMessage());
+            return $catchFunc();
+        }
+    }
+
+    /**
+     *
+     * @param \Ikechukwukalu\Clamavfileupload\Models\FileUpload|\Illuminate\Database\Eloquent\Collection $fileUploads
+     * @param array $files
+     * @return bool
+     */
+    public function _softDeleteFiles(EloquentCollection|FileUploadModel $fileUploads, array $files): bool
+    {
+        return $this->tryCatch(function() use($fileUploads, $files) {
+            if ($fileUploads instanceof EloquentCollection) {
+                $fileUploads->each->delete();
+                return true;
+            }
+
+            $fileUploads->delete();
+            FileDeletePass::dispatch($files);
+
+            return true;
+
+        }, function() use($files) {
+            FileDeleteFail::dispatch($files);
+            return false;
+        });
+    }
+
+    /**
+     *
+     * @param \Ikechukwukalu\Clamavfileupload\Models\FileUpload|\Illuminate\Database\Eloquent\Collection $fileUploads
+     * @param array $files
+     * @return bool
+     */
+    public function _forceDeleteFiles(EloquentCollection|FileUploadModel $fileUploads, array $files): bool
+    {
+        return $this->tryCatch(function() use($fileUploads, $files) {
+            if ($fileUploads instanceof EloquentCollection) {
+                $disk = $fileUploads[0]->disk;
+                $fileUploads->each->forceDelete();
+                $this->removeFiles($files, $disk);
+
+                return true;
+            }
+
+            $disk = $fileUploads->disk;
+            $fileUploads->forceDelete();
+            $this->removeFiles($files, $disk);
+            FileForceDeletePass::dispatch($files);
+
+            return true;
+
+        }, function() use($files) {
+            FileForceDeleteFail::dispatch($files);
+            return false;
+        });
+    }
+
+    /**
+     *
+     * @param \Ikechukwukalu\Clamavfileupload\Models\FileUpload|\Illuminate\Database\Eloquent\Collection $fileUploads
+     * @param array $files
+     * @return array
+     */
+    public function extractPath(EloquentCollection|FileUploadModel $fileUploads): array
+    {
+        $filePath = function(FileUploadModel $file): string {
+            if ($file->disk === 'local' || $file->disk === 'public') {
+                return "public/{$file->folder}/{$file->file_name}";
+            }
+
+            return $file->path;
+        };
+
+        if ($fileUploads instanceof FileUploadModel) {
+            return [$filePath($fileUploads)];
+        }
+
+        return $fileUploads->map(function(FileUploadModel $file) use($filePath) {
+            $file['path'] = $filePath($file);
+
+            return $file;
+        })->pluck('path')->toArray();
+    }
+
 }

@@ -18,7 +18,7 @@ class ClamavFileUpload implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan $event
+     * @param \Ikechukwukalu\Clamavfileupload\Events\ClamavQueuedFileScan $event
      * @return  void
      */
     public function handle(ClamavQueuedFileScan $event): void

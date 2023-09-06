@@ -28,7 +28,7 @@ class TemporaryFileUpload extends FileUpload
      * @param array $files
      * @return  bool
      */
-    public function removeFiles(array $files = []):  bool
+    public function removeFiles(array $files = [], null|string $disk = null):  bool
     {
         foreach ($files as $file) {
             $file = str_replace($this->storageDisk()->path('tmp'), '', $file);
