@@ -101,15 +101,15 @@ $fileUpload::getRef()
 FileUpload::deleteAll($ref);
 
 /**
- * @param string $ref
  * @param array $ids
+ * @param string $ref
  * @return bool
  */
 FileUpload::deleteMultiple($ids, $ref);
 
 /**
- * @param string $ref
  * @param int $id
+ * @param string $ref
  * @return bool
  */
 FileUpload::deleteOne($id, $ref);
@@ -126,15 +126,15 @@ FileUpload::deleteOne($id, $ref);
 FileUpload::forceDeleteAll($ref);
 
 /**
- * @param string $ref
  * @param array $ids
+ * @param string $ref
  * @return bool
  */
 FileUpload::forceDeleteMultiple($ids, $ref);
 
 /**
- * @param string $ref
  * @param int $id
+ * @param string $ref
  * @return bool
  */
 FileUpload::forceDeleteOne($id, $ref);
@@ -194,15 +194,15 @@ $fileUpload::getRef()
 QueuedFileUpload::deleteAll($ref);
 
 /**
- * @param string $ref
  * @param array $ids
+ * @param string $ref
  * @return bool
  */
 QueuedFileUpload::deleteMultiple($ids, $ref);
 
 /**
- * @param string $ref
  * @param int $id
+ * @param string $ref
  * @return bool
  */
 QueuedFileUpload::deleteOne($id, $ref);
@@ -219,15 +219,15 @@ QueuedFileUpload::deleteOne($id, $ref);
 QueuedFileUpload::forceDeleteAll($ref);
 
 /**
- * @param string $ref
  * @param array $ids
+ * @param string $ref
  * @return bool
  */
 QueuedFileUpload::forceDeleteMultiple($ids, $ref);
 
 /**
- * @param string $ref
  * @param int $id
+ * @param string $ref
  * @return bool
  */
 QueuedFileUpload::forceDeleteOne($id, $ref);
@@ -289,15 +289,15 @@ $fileUpload::getRef()
 NoClamavFileUpload::deleteAll($ref);
 
 /**
- * @param string $ref
  * @param array $ids
+ * @param string $ref
  * @return bool
  */
 NoClamavFileUpload::deleteMultiple($ids, $ref);
 
 /**
- * @param string $ref
  * @param int $id
+ * @param string $ref
  * @return bool
  */
 NoClamavFileUpload::deleteOne($id, $ref);
@@ -314,15 +314,15 @@ NoClamavFileUpload::deleteOne($id, $ref);
 NoClamavFileUpload::forceDeleteAll($ref);
 
 /**
- * @param string $ref
  * @param array $ids
+ * @param string $ref
  * @return bool
  */
 NoClamavFileUpload::forceDeleteMultiple($ids, $ref);
 
 /**
- * @param string $ref
  * @param int $id
+ * @param string $ref
  * @return bool
  */
 NoClamavFileUpload::forceDeleteOne($id, $ref);
