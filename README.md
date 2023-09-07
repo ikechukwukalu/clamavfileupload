@@ -105,14 +105,14 @@ FileUpload::deleteAll($ref);
  * @param array $ids
  * @return bool
  */
-FileUpload::deleteMultiple($ref, $ids);
+FileUpload::deleteMultiple($ids, $ref);
 
 /**
  * @param string $ref
  * @param int $id
  * @return bool
  */
-FileUpload::deleteOne($ref, $id);
+FileUpload::deleteOne($id, $ref);
 
 
 /**
@@ -130,14 +130,14 @@ FileUpload::forceDeleteAll($ref);
  * @param array $ids
  * @return bool
  */
-FileUpload::forceDeleteMultiple($ref, $ids);
+FileUpload::forceDeleteMultiple($ids, $ref);
 
 /**
  * @param string $ref
  * @param int $id
  * @return bool
  */
-FileUpload::forceDeleteOne($ref, $id);
+FileUpload::forceDeleteOne($id, $ref);
 ```
 
 ### QUEUED CLAMAV SCAN FILE UPLOAD
@@ -198,14 +198,14 @@ QueuedFileUpload::deleteAll($ref);
  * @param array $ids
  * @return bool
  */
-QueuedFileUpload::deleteMultiple($ref, $ids);
+QueuedFileUpload::deleteMultiple($ids, $ref);
 
 /**
  * @param string $ref
  * @param int $id
  * @return bool
  */
-QueuedFileUpload::deleteOne($ref, $id);
+QueuedFileUpload::deleteOne($id, $ref);
 
 
 /**
@@ -223,14 +223,14 @@ QueuedFileUpload::forceDeleteAll($ref);
  * @param array $ids
  * @return bool
  */
-QueuedFileUpload::forceDeleteMultiple($ref, $ids);
+QueuedFileUpload::forceDeleteMultiple($ids, $ref);
 
 /**
  * @param string $ref
  * @param int $id
  * @return bool
  */
-QueuedFileUpload::forceDeleteOne($ref, $id);
+QueuedFileUpload::forceDeleteOne($id, $ref);
 ```
 
 ### NO CLAMAV SCAN FILE UPLOAD
@@ -293,14 +293,14 @@ NoClamavFileUpload::deleteAll($ref);
  * @param array $ids
  * @return bool
  */
-NoClamavFileUpload::deleteMultiple($ref, $ids);
+NoClamavFileUpload::deleteMultiple($ids, $ref);
 
 /**
  * @param string $ref
  * @param int $id
  * @return bool
  */
-NoClamavFileUpload::deleteOne($ref, $id);
+NoClamavFileUpload::deleteOne($id, $ref);
 
 
 /**
@@ -318,14 +318,14 @@ NoClamavFileUpload::forceDeleteAll($ref);
  * @param array $ids
  * @return bool
  */
-NoClamavFileUpload::forceDeleteMultiple($ref, $ids);
+NoClamavFileUpload::forceDeleteMultiple($ids, $ref);
 
 /**
  * @param string $ref
  * @param int $id
  * @return bool
  */
-NoClamavFileUpload::forceDeleteOne($ref, $id);
+NoClamavFileUpload::forceDeleteOne($id, $ref);
 ```
 
 ### HASH
@@ -441,7 +441,7 @@ use Illuminate\Support\Facades\Crypt;
 \Ikechukwukalu\Clamavfileupload\Events\QueuedDeleteAll::class
 
 /**
- * Dispatches when a QueuedFileUpload::deleteMultiple($ref, $ids) is called.
+ * Dispatches when a QueuedFileUpload::deleteMultiple($ids, $ref) is called.
  *
  * @param  string  $ref
  * @param  array  $ids
@@ -449,7 +449,7 @@ use Illuminate\Support\Facades\Crypt;
 \Ikechukwukalu\Clamavfileupload\Events\QueuedDeleteMultiple::class
 
 /**
- * Dispatches when a QueuedFileUpload::deleteOne($ref, $id) is called.
+ * Dispatches when a QueuedFileUpload::deleteOne($id, $ref) is called.
  *
  * @param  string  $ref
  * @param  int|string  $id
@@ -464,7 +464,7 @@ use Illuminate\Support\Facades\Crypt;
 \Ikechukwukalu\Clamavfileupload\Events\QueuedForceDeleteAll::class
 
 /**
- * Dispatches when a QueuedFileUpload::forceDeleteMultiple($ref, $ids) is called.
+ * Dispatches when a QueuedFileUpload::forceDeleteMultiple($ids, $ref) is called.
  *
  * @param  string  $ref
  * @param  array  $ids
@@ -472,7 +472,7 @@ use Illuminate\Support\Facades\Crypt;
 \Ikechukwukalu\Clamavfileupload\Events\QueuedForceDeleteMultiple::class
 
 /**
- * Dispatches when a QueuedFileUpload::forceDeleteOne($ref, $id) is called.
+ * Dispatches when a QueuedFileUpload::forceDeleteOne($id, $ref) is called.
  *
  * @param  string  $ref
  * @param  int|string  $id
