@@ -50,9 +50,7 @@ class NoClamavFileUpload extends ClamavFileUpload implements FileUploadInterface
             return $data;
         }
 
-        $this->success = $this->fileUpload::isSuccessful();
-        $this->errorMessage = $this->fileUpload::getErrorMessage();
-
+        $this->failedUpload($this->fileUpload::getErrorMessage());
         return false;
     }
 

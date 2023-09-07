@@ -19,6 +19,7 @@ class TemporaryFileUpload extends FileUpload
             return $this->storeFiles();
         }
 
+        $this->failedUpload(trans('clamavfileupload::clamav.empty_file_input'));
         return false;
     }
 

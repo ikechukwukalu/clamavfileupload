@@ -1,4 +1,8 @@
-# v2.0.2
+# v2.0.3
+
+- Implemented failed upload message for BasicFileUpload and TemporaryFileUpload
+
+## v2.0.2
 
 - Added new soft delete functions which are `deleteAll(string $ref)`, `deleteMultiple(array $ids, null|string $ref = null)` and `deleteOne(int|string $id, null|string $ref = null)`
 - Added new delete functions that will permanently delete files from the database and disk which are `forceDeleteAll(string $ref)`, `forceDeleteMultiple(array $ids, null|string $ref = null)` and `forceDeleteOne(string $ref, int|string $id`
