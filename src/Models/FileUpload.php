@@ -5,7 +5,6 @@ namespace Ikechukwukalu\Clamavfileupload\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Crypt;
 
 class FileUpload extends Model
 {
@@ -31,43 +30,5 @@ class FileUpload extends Model
     protected $casts = [
         'hashed' => 'boolean'
     ];
-
-
-        protected function getFileNameAttribute($value)
-        {
-            if ($this->hashed) {
-                return Crypt::decryptString($value);
-            }
-
-            return $value;
-        }
-
-        protected function getPathAttribute($value)
-        {
-            if ($this->hashed) {
-                return Crypt::decryptString($value);
-            }
-
-            return $value;
-        }
-
-
-        protected function getRelativePathAttribute($value)
-        {
-            if ($this->hashed) {
-                return Crypt::decryptString($value);
-            }
-
-            return $value;
-        }
-
-        protected function getUrlAttribute($value)
-        {
-            if ($this->hashed) {
-                return Crypt::decryptString($value);
-            }
-
-            return $value;
-        }
 
 }

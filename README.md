@@ -336,8 +336,26 @@ It might be helpful to extend the Model file `Ikechukwukalu\Clamavfileupload\Mod
 ``` php
 use Illuminate\Support\Facades\Crypt;
 
-
     protected function getFileNameAttribute($value)
+    {
+        if ($this->hashed) {
+            return Crypt::decryptString($value);
+        }
+
+        return $value;
+    }
+
+    protected function getPathAttribute($value)
+    {
+        if ($this->hashed) {
+            return Crypt::decryptString($value);
+        }
+
+        return $value;
+    }
+
+
+    protected function getRelativePathAttribute($value)
     {
         if ($this->hashed) {
             return Crypt::decryptString($value);
@@ -349,7 +367,7 @@ use Illuminate\Support\Facades\Crypt;
     protected function getUrlAttribute($value)
     {
         if ($this->hashed) {
-            return Crypt::decrypt(Crypt::decryptString($value));
+            return Crypt::decryptString($value);
         }
 
         return $value;
