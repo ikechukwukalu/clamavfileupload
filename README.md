@@ -330,6 +330,7 @@ NoClamavFileUpload::forceDeleteOne($id, $ref);
 ### HASH
 
 If the `HASHED` param within your `.env` is set to `true` the `file_name`, `path` and `url` fields will be encrypted before they are saved into the DB.
+The stored file will also be encrypted.
 
 It might be helpful to extend the Model file `Ikechukwukalu\Clamavfileupload\Models\FileUpload` and add the following code:
 
@@ -372,6 +373,30 @@ use Illuminate\Support\Facades\Crypt;
 
         return $value;
     }
+```
+
+Sample codes to view and download encrypted file:
+
+```php
+use Illuminate\Http\Request;
+use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+Route::get('/download/hashed/file/{id}', function (Request $request, $id): StreamedResponse {
+    $file = FileUploadModel::where('id', $id)->first()
+
+    return response()->streamDownload(function () use($file) {
+        echo Crypt::decrypt(Storage::disk('local')->get($file->relative_path));
+    }, "{$file->name}{$file->extension}");
+});
+
+Route::get('/view/hashed/file/{id}', function (Request $request, $id) {
+    $file = FileUploadModel::where('id', $id)->first();
+    $decrypted = Crypt::decrypt(Storage::disk('local')->get($file->relative_path));
+
+    header("Content-type: {$file->mime_type}");
+    echo $decrypted;
+});
 ```
 
 ## EVENTS
