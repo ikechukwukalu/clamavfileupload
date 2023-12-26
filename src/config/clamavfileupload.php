@@ -34,12 +34,7 @@ return [
     /**
      * string - Default 'public'
      */
-    'path' => env('FILE_UPLOAD_PATH', 'public'),
-
-    /**
-     * string - Default 'local'
-     */
-    'disk' => env('FILE_UPLOAD_DISK', 'local'),
+    'disk' => env('FILE_UPLOAD_DISK', 'public'),
 
     /**
      * bool - should file upload be processed in a queue. Default true

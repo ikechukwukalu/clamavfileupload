@@ -30,8 +30,7 @@ CLAMD_SOCK_LEN=20000
 CLAMD_IP=null
 CLAMD_PORT=3310
 FILE_UPLOAD_INPUT=file
-FILE_UPLOAD_PATH=public
-FILE_UPLOAD_DISK=local
+FILE_UPLOAD_DISK=public
 FILE_UPLOAD_LOG_SCAN_DATA=false
 HASHED=false
 VISIBLE=true
@@ -350,7 +349,7 @@ use Illuminate\Support\Facades\Crypt;
     protected function getUrlAttribute($value)
     {
         if ($this->hashed) {
-            return Crypt::decryptString($value);
+            return Crypt::decrypt(Crypt::decryptString($value));
         }
 
         return $value;

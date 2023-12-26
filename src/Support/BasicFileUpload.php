@@ -19,7 +19,9 @@ class BasicFileUpload extends FileUpload
     public function fileUpload(): bool|FileUploadModel|EloquentCollection
     {
         if($this->request->file()) {
-            $this->storeFiles();
+            if (!$this->storeFiles()) {
+                return $this->failedUpload(trans('clamavfileupload::clamav.failed'));
+            }
 
             if (is_array($this->request->file($this->input))) {
                 return $this->insertMultipleFiles();

@@ -34,7 +34,9 @@ abstract class ClamavFileUpload extends FileUpload
     public function fileUpload(): bool|FileUploadModel|EloquentCollection
     {
         if($this->request->file()) {
-            $this->storeFiles();
+            if (!$this->storeFiles()) {
+                return $this->failedUpload(trans('clamavfileupload::clamav.failed'));
+            }
 
             if (!$this->areFilesSafe()) {
                 return $this->removeFiles();

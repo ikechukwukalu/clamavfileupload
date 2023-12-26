@@ -11,6 +11,7 @@ use Ikechukwukalu\Clamavfileupload\Models\FileUpload as FileUploadModel;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +21,6 @@ class FileUpload
 {
     public Request $request;
     public null|string $ref;
-
     protected array $scanData;
     protected bool $hashed;
     protected bool $visible;
@@ -286,11 +286,11 @@ class FileUpload
      *
      * @return  \Illuminate\Contracts\Filesystem\Filesystem
      */
-    protected function provideDisk(): Filesystem
-    {
-        $this->storageDisk()->makeDirectory($this->uploadPath);
-        return $this->storageDisk();
-    }
+    // protected function provideDisk(): Filesystem
+    // {
+    //     $this->storageDisk()->makeDirectory($this->uploadPath);
+    //     return $this->storageDisk();
+    // }
 
     /**
      * Save single or multiple files.
@@ -319,16 +319,16 @@ class FileUpload
     protected function saveMultipleFiles(null|string $fileName = null): bool|array
     {
         return $this->tryCatch(function() use($fileName) {
-            $disk = $this->provideDisk();
+            $disk = $this->storageDisk();
 
             $i = 1;
             foreach ($this->request->file($this->input) as $file) {
                 $fileName = $this->fileName . "_{$i}" . $this->getExtension($file);
 
                 if ($this->visible) {
-                    $disk->putFileAs($this->uploadPath, $file, $fileName, 'public');
+                    $disk->putFileAs($this->folder, $file, $fileName, 'public');
                 } else {
-                    $disk->putFileAs($this->uploadPath, $file, $fileName);
+                    $disk->putFileAs($this->folder, $file, $fileName);
                 }
 
                 $i ++;
@@ -352,13 +352,14 @@ class FileUpload
     {
         return $this->tryCatch(function() use($fileName) {
             $fileName = $this->fileName . $this->getExtension();
+            $file = $this->request->file($this->input);
 
             if ($this->visible) {
-                $this->provideDisk()->putFileAs($this->uploadPath,
-                        $this->request->file($this->input), $fileName, 'public');
+                $this->storageDisk()->putFileAs($this->uploadPath, $file,
+                    $fileName, 'public');
             } else {
-                $this->provideDisk()->putFileAs($this->uploadPath,
-                        $this->request->file($this->input), $fileName);
+                $this->storageDisk()->putFileAs($this->uploadPath, $file,
+                    $fileName);
             }
 
             return true;
@@ -516,7 +517,7 @@ class FileUpload
     /**
      * Save file path in database.
      *
-     * @param $file
+     * @param string $relativeFilePath
      * @return  string
      */
     protected function savePathInDB($relativeFilePath): string
@@ -528,6 +529,21 @@ class FileUpload
         }
 
         return $path;
+    }
+
+    /**
+     * Save file path in database.
+     *
+     * @param string $relativeFilePath
+     * @return  string
+     */
+    protected function saveRelativePathInDB($relativeFilePath): string
+    {
+        if ($this->hashed) {
+            return Crypt::encryptString($relativeFilePath);
+        }
+
+        return $relativeFilePath;
     }
 
     /**
@@ -554,7 +570,7 @@ class FileUpload
      */
     protected function getRelativeFilePath($fileName): string
     {
-        return $this->uploadPath . "/" . $fileName;
+        return $this->folder . "/" . $fileName;
     }
 
     /**
@@ -615,6 +631,7 @@ class FileUpload
             'disk' => $this->getDisk(),
             'mime_type' => $this->storageDisk()->mimeType($relativeFilePath),
             'path' => $this->savePathInDB($relativeFilePath),
+            'relative_path' => $this->saveRelativePathInDB($relativeFilePath),
             'folder' => $this->folder,
             'hashed' => $this->hashed
         ];
@@ -634,7 +651,14 @@ class FileUpload
             [$fileName, $relativeFilePath] = $this->fileNameAndPath($file, $i);
 
             if ($this->storageDisk()->missing($relativeFilePath)
-                || ($this->storageDisk()->size($relativeFilePath) < 1)
+            ) {
+                return $this->failedUpload(
+                        trans('clamavfileupload::clamav.file_not_found',
+                        ['name' => $fileName]
+                    ));
+            }
+
+            if (($this->storageDisk()->size($relativeFilePath) < 1)
             ) {
                 $this->removeFiles();
                 return $this->failedUpload(
@@ -644,6 +668,7 @@ class FileUpload
             }
 
             $data[] = $this->getFileModelData($file, $i);
+            $this->encryptFile($relativeFilePath, $file);
             $i ++;
         }
 
@@ -673,9 +698,16 @@ class FileUpload
     {
         [$fileName, $relativeFilePath] = $this->fileNameAndPath();
 
-        if ($this->storageDisk()->missing($relativeFilePath)
-            || ($this->storageDisk()->size($relativeFilePath) < 1)
-        ) {
+        if ($this->storageDisk()->missing($relativeFilePath))
+        {
+            return $this->failedUpload(
+                    trans('clamavfileupload::clamav.file_not_found',
+                    ['name' => $fileName]
+                ));
+        }
+
+        if (($this->storageDisk()->size($relativeFilePath) < 1))
+        {
             $this->removeFiles();
             return $this->failedUpload(
                     trans('clamavfileupload::clamav.corrupt_file',
@@ -683,10 +715,11 @@ class FileUpload
                 ));
         }
 
-        return $this->tryCatch(function() {
+        return $this->tryCatch(function() use ($fileName, $relativeFilePath) {
             $file = FileUploadModel::create($this->getFileModelData());
             SavedFilesIntoDB::dispatch($file, $this->ref);
             $this->wasUploaded();
+            $this->encryptFile($relativeFilePath, $this->request->file($this->input));
 
             return $file;
 
@@ -766,6 +799,7 @@ class FileUpload
             return $tryFunc();
         } catch (\Throwable $th) {
             $this->failedUpload($th->getMessage());
+            Log::error($th->getMessage());
             return $catchFunc();
         }
     }
@@ -922,6 +956,23 @@ class FileUpload
         $files = $this->extractPath($fileUpload);
 
         return [$fileUpload, $files];
+    }
+
+    /**
+     * EncryptFile.
+     *
+     * @param string $relativeFilePath
+     * @param \Illuminate\Http\UploadedFile $file
+     * @return void
+     */
+    private function encryptFile(string $relativeFilePath, UploadedFile $file): void
+    {
+        $options = $this->visible ? 'public' : [];
+
+        if ($this->hashed) {
+            // $this->storageDisk()->delete($relativeFilePath);
+            $this->storageDisk()->put("{$relativeFilePath}", Crypt::encrypt($file->getContent()), $options);
+        }
     }
 
 }

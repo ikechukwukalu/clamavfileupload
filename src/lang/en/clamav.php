@@ -5,6 +5,7 @@ return [
     'file_not_found' => 'File with given name :name not found',
     'corrupt_file' => 'File with given name :name is corrupted',
     'unable_to_open_socket' => 'Scan failed, unable to open socket!',
+    'failed' => 'Failed to store file(s)',
     'socket_connected' => 'Connected to socket!',
     'not_running' => 'Clamav is not running',
     'database_error' => 'Could not insert :message into the database',
