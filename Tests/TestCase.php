@@ -4,9 +4,12 @@ namespace Ikechukwukalu\Clamavfileupload\Tests;
 
 use Ikechukwukalu\Clamavfileupload\ClamavFileUploadServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithExceptionHandling;
 
 abstract class TestCase extends BaseTestCase
 {
+    use InteractsWithExceptionHandling;
+
     public function setUp(): void
     {
       parent::setUp();
