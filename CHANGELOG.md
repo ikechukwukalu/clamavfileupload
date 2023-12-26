@@ -1,4 +1,8 @@
-# v2.0.3
+# v2.0.4
+
+- Added file encryption
+
+## v2.0.3
 
 - Implemented failed upload message for BasicFileUpload and TemporaryFileUpload
 
