@@ -53,7 +53,6 @@ FileUpload::uploadFiles($request); //returns bool|FileUploadModel|EloquentCollec
  * 'name' => null // This is different from file name
  * 'input' => config('clamavfileupload.input', 'file')
  * 'folder' => null
- * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
  * 'visible' => config('clamavfileupload.visible', true)
  * 'disk' => config('clamavfileupload.disk', 'local')
@@ -158,7 +157,6 @@ QueuedFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloquent
  * 'name' => null // This is different from file name
  * 'input' => config('clamavfileupload.input', 'file')
  * 'folder' => null
- * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
  * 'visible' => config('clamavfileupload.visible', true)
  * 'disk' => config('clamavfileupload.disk', 'local')
@@ -246,7 +244,6 @@ NoClamavFileUpload::uploadFiles($request); //returns bool|FileUploadModel|Eloque
  * 'name' => null // This is different from file name
  * 'input' => config('clamavfileupload.input', 'file')
  * 'folder' => null
- * 'uploadPath' => config('clamavfileupload.path', 'public')
  * 'hashed' => config('clamavfileupload.hashed', false)
  * 'visible' => config('clamavfileupload.visible', true)
  * 'disk' => config('clamavfileupload.disk', 'local')
@@ -386,13 +383,13 @@ Route::get('/download/hashed/file/{id}', function (Request $request, $id): Strea
     $file = FileUploadModel::where('id', $id)->first()
 
     return response()->streamDownload(function () use($file) {
-        echo Crypt::decrypt(Storage::disk('local')->get($file->relative_path));
+        echo Crypt::decrypt(Storage::disk($file->disk)->get($file->relative_path));
     }, "{$file->name}{$file->extension}");
 });
 
 Route::get('/view/hashed/file/{id}', function (Request $request, $id) {
     $file = FileUploadModel::where('id', $id)->first();
-    $decrypted = Crypt::decrypt(Storage::disk('local')->get($file->relative_path));
+    $decrypted = Crypt::decrypt(Storage::disk($file->disk)->get($file->relative_path));
 
     header("Content-type: {$file->mime_type}");
     echo $decrypted;

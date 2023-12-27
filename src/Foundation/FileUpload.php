@@ -31,7 +31,7 @@ class FileUpload
     protected string $disk;
     protected string $fileName;
     protected string $input;
-    protected string $uploadPath;
+    protected string $uploadPath = '/';
 
     /**
      * Log scan data.
@@ -54,8 +54,7 @@ class FileUpload
      */
     public function customFileUploadSettings(array $settings = []): void
     {
-        $whiteList = ['name', 'input', 'folder',
-            'uploadPath', 'hashed', 'visible', 'disk'];
+        $whiteList = ['name', 'input', 'folder', 'hashed', 'visible', 'disk'];
 
         foreach ($settings as $key => $setting) {
             if (in_array($key, $whiteList)) {
@@ -70,7 +69,7 @@ class FileUpload
         }
 
         if ($this->folder) {
-            $this->uploadPath .= ("/" . $this->folder);
+            $this->uploadPath .= $this->folder;
         }
     }
 
@@ -742,7 +741,6 @@ class FileUpload
             'name' => null,
             'input' => config('clamavfileupload.input', 'file'),
             'folder' => null,
-            'uploadPath' => config('clamavfileupload.path', 'public'),
             'hashed' => config('clamavfileupload.hashed', false),
             'visible' => config('clamavfileupload.visible', true),
             'disk' => config('clamavfileupload.disk', 'local')
@@ -869,7 +867,7 @@ class FileUpload
     {
         $filePath = function(FileUploadModel $file): string {
             if ($file->disk === 'local' || $file->disk === 'public') {
-                return "public/{$file->folder}/{$file->file_name}";
+                return "{$file->folder}/{$file->file_name}";
             }
 
             return $file->path;
