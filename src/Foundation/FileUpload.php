@@ -865,23 +865,11 @@ class FileUpload
      */
     public function extractPath(EloquentCollection|FileUploadModel $fileUploads): array
     {
-        $filePath = function(FileUploadModel $file): string {
-            if ($file->disk === 'local' || $file->disk === 'public') {
-                return "{$file->folder}/{$file->file_name}";
-            }
-
-            return $file->path;
-        };
-
         if ($fileUploads instanceof FileUploadModel) {
-            return [$filePath($fileUploads)];
+            return [$fileUploads->relative_path];
         }
 
-        return $fileUploads->map(function(FileUploadModel $file) use($filePath) {
-            $file['path'] = $filePath($file);
-
-            return $file;
-        })->pluck('path')->toArray();
+        return $fileUploads->pluck('relative_path')->toArray();
     }
 
     /**
