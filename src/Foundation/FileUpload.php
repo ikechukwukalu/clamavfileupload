@@ -313,10 +313,9 @@ class FileUpload
             $i = 1;
             foreach ($this->request->file($this->input) as $file) {
                 $fileName = $this->fileName . "_{$i}" . $this->getExtension($file);
-                $disk->putFileAs($this->folder, $file, $fileName);
+                $disk->putFileAs($this->folder, $this->encryptFile($file), $fileName);
 
                 if ($this->visible) {
-                    $disk->putFileAs($this->folder, $file, $fileName);
                     $disk->setVisibility($this->folder . "/" . $fileName, 'public');
                 }
 
@@ -344,7 +343,7 @@ class FileUpload
             $file = $this->request->file($this->input);
             $disk = $this->storageDisk();
 
-            $disk->putFileAs($this->uploadPath, $file, $fileName);
+            $disk->putFileAs($this->uploadPath, $this->encryptFile($file), $fileName);
 
             if ($this->visible) {
                 $disk->setVisibility($this->folder . "/" . $fileName, 'public');
@@ -656,7 +655,6 @@ class FileUpload
             }
 
             $data[] = $this->getFileModelData($file, $i);
-            $this->encryptFile($relativeFilePath, $file);
             $i ++;
         }
 
@@ -707,7 +705,6 @@ class FileUpload
             $file = FileUploadModel::create($this->getFileModelData());
             SavedFilesIntoDB::dispatch($file, $this->ref);
             $this->wasUploaded();
-            $this->encryptFile($relativeFilePath, $this->request->file($this->input));
 
             return $file;
 
@@ -936,18 +933,16 @@ class FileUpload
     /**
      * EncryptFile.
      *
-     * @param string $relativeFilePath
      * @param \Illuminate\Http\UploadedFile $file
      * @return void
      */
-    private function encryptFile(string $relativeFilePath, UploadedFile $file): void
+    private function encryptFile(UploadedFile $file): string|UploadedFile
     {
-        $options = $this->visible ? 'public' : [];
-
         if ($this->hashed) {
-            // $this->storageDisk()->delete($relativeFilePath);
-            $this->storageDisk()->put("{$relativeFilePath}", Crypt::encrypt($file->getContent()), $options);
+            return Crypt::encrypt($file->getContent());
         }
+
+        return $file;
     }
 
 }
