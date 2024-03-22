@@ -1,6 +1,7 @@
-# v2.0.5
+# v2.0.6
 
 - Fixed upload path bug
+- Added file encryption for s3
 
 ## v2.0.4
 
