@@ -316,8 +316,8 @@ class FileUpload
                 $disk->putFileAs($this->folder, $file, $fileName);
 
                 if ($this->visible) {
-                    [$fileName, $relativeFilePath] = $this->fileNameAndPath();
-                    $disk->setVisibility($relativeFilePath, 'public');
+                    $disk->putFileAs($this->folder, $file, $fileName);
+                    $disk->setVisibility($this->folder . "/" . $fileName, 'public');
                 }
 
                 $i ++;
@@ -347,8 +347,7 @@ class FileUpload
             $disk->putFileAs($this->uploadPath, $file, $fileName);
 
             if ($this->visible) {
-                [$fileName, $relativeFilePath] = $this->fileNameAndPath();
-                $disk->setVisibility($relativeFilePath, 'public');
+                $disk->setVisibility($this->folder . "/" . $fileName, 'public');
             }
 
             return true;
