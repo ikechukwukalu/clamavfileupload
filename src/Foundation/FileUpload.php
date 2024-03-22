@@ -55,6 +55,7 @@ class FileUpload
     public function customFileUploadSettings(array $settings = []): void
     {
         $whiteList = ['name', 'input', 'folder', 'hashed', 'visible', 'disk'];
+        $this->uploadPath = '/';
 
         foreach ($settings as $key => $setting) {
             if (in_array($key, $whiteList)) {
@@ -281,17 +282,6 @@ class FileUpload
     }
 
     /**
-     * Provide \Illuminate\Support\Facades\Storage::build.
-     *
-     * @return  \Illuminate\Contracts\Filesystem\Filesystem
-     */
-    // protected function provideDisk(): Filesystem
-    // {
-    //     $this->storageDisk()->makeDirectory($this->uploadPath);
-    //     return $this->storageDisk();
-    // }
-
-    /**
      * Save single or multiple files.
      *
      * @return  bool
@@ -323,11 +313,11 @@ class FileUpload
             $i = 1;
             foreach ($this->request->file($this->input) as $file) {
                 $fileName = $this->fileName . "_{$i}" . $this->getExtension($file);
+                $disk->putFileAs($this->folder, $file, $fileName);
 
                 if ($this->visible) {
-                    $disk->putFileAs($this->folder, $file, $fileName, 'public');
-                } else {
-                    $disk->putFileAs($this->folder, $file, $fileName);
+                    [$fileName, $relativeFilePath] = $this->fileNameAndPath();
+                    $disk->setVisibility($relativeFilePath, 'public');
                 }
 
                 $i ++;
@@ -352,13 +342,13 @@ class FileUpload
         return $this->tryCatch(function() use($fileName) {
             $fileName = $this->fileName . $this->getExtension();
             $file = $this->request->file($this->input);
+            $disk = $this->storageDisk();
+
+            $disk->putFileAs($this->uploadPath, $file, $fileName);
 
             if ($this->visible) {
-                $this->storageDisk()->putFileAs($this->uploadPath, $file,
-                    $fileName, 'public');
-            } else {
-                $this->storageDisk()->putFileAs($this->uploadPath, $file,
-                    $fileName);
+                [$fileName, $relativeFilePath] = $this->fileNameAndPath();
+                $disk->setVisibility($relativeFilePath, 'public');
             }
 
             return true;
