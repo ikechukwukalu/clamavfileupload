@@ -1,4 +1,8 @@
-# v2.0.4
+# v2.0.5
+
+- Fixed upload path bug
+
+## v2.0.4
 
 - Added file encryption
 
