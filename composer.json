@@ -37,15 +37,14 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "doctrine/dbal": "^3.6|^4.0|^5.0",
-        "illuminate/broadcasting": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/database": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/events": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/http": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/queue": "^8.0|^9.0|^10.0|^11.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
-        "php": ">=7.3",
+        "illuminate/broadcasting": "^9.0|^10.0|^11.0",
+        "illuminate/contracts": "^9.0|^10.0|^11.0",
+        "illuminate/database": "^9.0|^10.0|^11.0",
+        "illuminate/events": "^9.0|^10.0|^11.0",
+        "illuminate/http": "^9.0|^10.0|^11.0",
+        "illuminate/queue": "^9.0|^10.0|^11.0",
+        "illuminate/support": "^9.0|^10.0|^11.0",
+        "php": ">=8.0",
         "symfony/http-foundation": "^5.4|^6.0|^7.0"
     },
     "require-dev": {
