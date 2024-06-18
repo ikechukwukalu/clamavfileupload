@@ -1,4 +1,8 @@
-# v3.0.0
+# v3.0.1
+
+- Fixed test issues
+
+## v3.0.0
 
 - Updated package to support Laravel 8 & 11
 
