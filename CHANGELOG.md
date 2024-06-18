@@ -1,4 +1,8 @@
-# v2.0.6
+# v3.0.0
+
+- Updated package to support Laravel 8 & 11
+
+## v2.0.6
 
 - Fixed upload path bug
 - Added file encryption for s3
