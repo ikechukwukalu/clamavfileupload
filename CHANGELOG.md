@@ -4,7 +4,7 @@
 
 ## v3.0.0
 
-- Updated package to support Laravel 8 & 11
+- Updated package to support Laravel 11
 
 ## v2.0.6
 
