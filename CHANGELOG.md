@@ -1,3 +1,9 @@
+# v4.0.0
+
+- Added Laravel 12 support.
+- Require PHP 8.2 or newer.
+- Test with Orchestra Testbench 10 and PHPUnit 11 on PHP 8.2, 8.3, and 8.4.
+
 # v3.0.1
 
 - Fixed test issues
